@@ -1,0 +1,33 @@
+.wrapper {
+    margin-bottom: 48px;
+}
+
+.centered {
+    text-align: center;
+}
+
+.subtitle {
+    margin-bottom: 12px;
+
+    color: var(--color-primary);
+
+    font-size: 14px;
+    font-weight: 700;
+
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+.title {
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1.1;
+
+    color: var(--color-dark);
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 36px;
+    }
+}

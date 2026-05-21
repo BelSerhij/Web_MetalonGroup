@@ -1,0 +1,140 @@
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    width: 100%;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 88px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.link {
+    position: relative;
+
+    color: var(--color-dark);
+
+    font-size: 15px;
+    font-weight: 600;
+
+    transition: color var(--transition-fast);
+}
+
+.link::after {
+    content: '';
+
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+
+    width: 0;
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: var(--color-primary);
+
+    transition: width var(--transition-fast);
+}
+
+.link:hover {
+    color: var(--color-primary);
+}
+
+.link:hover::after {
+    width: 100%;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.burger {
+    display: none;
+
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 14px;
+    border: 1px solid var(--color-border);
+
+    background: var(--color-white);
+}
+
+.burger span {
+    display: block;
+
+    width: 20px;
+    height: 2px;
+
+    margin-inline: auto;
+
+    border-radius: 999px;
+
+    background: var(--color-dark);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 992px) {
+    .navigation {
+        display: none;
+    }
+
+    .actions .button-primary {
+        display: none;
+    }
+
+    .burger {
+        display: flex;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        min-height: 76px;
+    }
+
+    .logo h2 {
+        font-size: 24px;
+    }
+
+    .logo p {
+        font-size: 12px;
+    }
+}

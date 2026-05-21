@@ -1,0 +1,1 @@
+export { AdvantageCard } from './AdvantageCard';

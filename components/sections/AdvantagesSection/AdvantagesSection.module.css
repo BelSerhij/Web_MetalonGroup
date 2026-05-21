@@ -1,0 +1,27 @@
+.section {
+    padding: 120px 0;
+
+    background: var(--color-surface);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+@media (max-width: 1200px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding: 80px 0;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,121 @@
+.hero {
+    position: relative;
+    padding: 120px 0;
+    overflow: hidden;
+    background:
+        linear-gradient(135deg,
+            #18181b 0%,
+            #27272a 60%,
+            #3b2a20 100%);
+    color: white;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.badge {
+    display: inline-flex;
+    margin-bottom: 24px;
+    padding: 12px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+.title {
+    max-width: 700px;
+    margin-bottom: 24px;
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1;
+    color: white;
+}
+
+.description {
+    max-width: 520px;
+    margin-bottom: 40px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 20px;
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+}
+.background {
+    position: absolute;
+    inset: 0;
+    opacity: 0.8;
+    background-image: url('/fon.png');
+    background-size: cover;
+    background-position: center;
+    filter: blur(0.3px);
+}
+
+.image {
+    position: relative;
+    height: 560px;
+    overflow: hidden;
+    border-radius: 32px;
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.25),
+            rgba(0, 0, 0, 0.25)),
+        url('/hero-fence.jpg');
+
+    background-size: cover;
+    background-position: center;
+    box-shadow: var(--shadow-lg);
+    transition:
+        transform 0.4s ease,
+        box-shadow 0.4s ease;
+}
+
+.image:hover {
+    transform: translateY(-6px);
+}
+
+
+@media (max-width: 1024px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+
+    .title {
+        font-size: 56px;
+    }
+
+    .image {
+        height: 480px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 80px 0;
+    }
+
+    .title {
+        font-size: 42px;
+    }
+
+    .description {
+        font-size: 18px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .image {
+        height: 360px;
+    }
+}
