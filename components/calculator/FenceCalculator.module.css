@@ -1,0 +1,307 @@
+.wrapper {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 40px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 32px;
+    border-radius: 24px;
+    background: #f4f4f5;
+}
+
+.form h2 {
+    margin-bottom: 8px;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.form input {
+    padding: 18px 20px;
+    border: 1px solid #e4e4e7;
+    border-radius: 16px;
+    background: white;
+}
+
+.result {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    height: 300px;
+}
+
+.card {
+    padding: 20px;
+    border-radius: 18px;
+    background: white;
+    border: 1px solid #e4e4e7;
+}
+
+.card p {
+    margin-bottom: 1px;
+    color: #71717a;
+}
+
+.card h3 {
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.select {
+    padding: 10px 12px;
+    border: 1px solid #e4e4e7;
+    border-radius: 12px;
+    border-color: var(--color-primary);
+}
+.PSelect{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 10px;
+    border-radius: 12px;
+}
+
+.specs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border-radius: 16px;
+    background: white;
+    border: 1px solid #e4e4e7;
+}
+
+.thicknessBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.label {
+    font-weight: 700;
+}
+
+
+.thicknessTabs {
+    display: flex;
+    gap: 10px;
+}
+
+.thicknessTab {
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid #e4e4e7;
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        0.2s transform,
+        0.2s box-shadow,
+        0.2s border-color,
+        0.2s background;
+}
+
+.thicknessTab:hover {
+    border-color: var(--color-primary);
+}
+
+.activeThickness {
+    background: #f97316;
+    border-color: #f97316;
+    color: white;
+    transform: translateY(-2px);
+    outline: 3px solid rgba(249, 115, 22, 0.2);
+    box-shadow:
+        0 10px 25px rgba(249, 115, 22, 0.24);
+}
+
+.colors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.colorButton {
+    position: relative;
+    padding: 8px 10px;
+    border: 1px solid #e4e4e7;
+    border-radius: 14px;
+    background: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+            0.2s transform,
+            0.2s box-shadow,
+            0.2s border-color,
+            0.2s background;
+}
+
+.colorButton:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.activeColor {
+    transform: translateY(-2px) scale(1.03);
+    outline: 3px solid #f97316;
+    outline-offset: 2px;
+    box-shadow:
+        0 10px 25px rgba(249, 115, 22, 0.22);
+    position: relative;
+    z-index: 2;
+}
+
+/* =========================
+   COLOR STYLES
+========================= */
+
+.color7016 {
+    background: #383e42;
+    color: white;
+    border-color: #383e42;
+}
+
+.color8017 {
+    background: #4e2d24;
+    color: white;
+    border-color: #4e2d24;
+}
+
+.color6005 {
+    background: #0b3b2e;
+    color: white;
+    border-color: #0b3b2e;
+}
+
+.color7024 {
+    background: #474a51;
+    color: white;
+    border-color: #474a51;
+}
+
+.colorZinc {
+    background: linear-gradient(
+        135deg,
+        #d6d6d6,
+        #f3f3f3
+    );
+    color: #18181b;
+    border-color: #d4d4d8;
+}
+
+/* =========================
+   COATING
+========================= */
+
+.coatingButton {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid #e4e4e7;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+            0.2s transform,
+            0.2s box-shadow,
+            0.2s border-color,
+            0.2s background;
+}
+
+.coatingButton:hover {
+    transform: translateY(-2px);
+}
+
+.matt {
+    background: #18181b;
+    color: white;
+    border-color: #18181b;
+}
+
+.gloss {
+    background: linear-gradient(
+        135deg,
+        #f4f4f5,
+        white
+    );
+    color: #18181b;
+}
+
+/* =========================
+   PAINTING TYPE
+========================= */
+
+.paintingTabs {
+    display: flex;
+    gap: 10px;
+}
+
+.paintingButton {
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid #e4e4e7;
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+            0.2s transform,
+            0.2s box-shadow,
+            0.2s border-color,
+            0.2s background;
+}
+
+.paintingButton:hover {
+    border-color: var(--color-primary);
+}
+
+.activePainting {
+    background: #f97316;
+    border-color: #f97316;
+    color: white;
+    transform: translateY(-2px);
+    outline: 3px solid rgba(249, 115, 22, 0.2);
+    box-shadow:
+        0 10px 25px rgba(249, 115, 22, 0.24);
+}
+
+/* =========================
+   UNAVAILABLE
+========================= */
+
+.unavailable {
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    font-weight: 700;
+}
+
+
+.colorBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.disabledButton {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: grayscale(1);
+    pointer-events: none;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+
+.colors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+}

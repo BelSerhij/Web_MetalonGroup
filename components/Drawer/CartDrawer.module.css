@@ -1,0 +1,201 @@
+.drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+
+    width: 420px;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 24px;
+
+    background: white;
+
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
+
+    z-index: 300;
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.items {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    overflow-y: auto;
+}
+
+.item {
+    display: flex;
+    gap: 16px;
+
+    padding-bottom: 16px;
+
+    border-bottom: 1px solid #e4e4e7;
+}
+
+.image {
+    border-radius: 16px;
+
+    object-fit: cover;
+}
+
+.content {
+    flex: 1;
+}
+
+.footer {
+    padding-top: 24px;
+
+    border-top: 1px solid #e4e4e7;
+}
+
+.total {
+    margin-bottom: 16px;
+
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.checkoutButton {
+    width: 100%;
+
+    padding: 16px;
+
+    border-radius: 16px;
+
+    background: var(--color-primary);
+    color: white;
+
+    font-weight: 700;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.5);
+
+    z-index: 250;
+}
+
+.drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+
+    width: 420px;
+    max-width: 100%;
+
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 24px;
+
+    background: white;
+
+    z-index: 300;
+
+    animation: slideIn 0.3s ease;
+}
+
+.closeButton {
+    font-size: 24px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 24px;
+}
+
+.removeButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    transition: 0.3s ease;
+}
+
+.removeButton:hover {
+    background: #f4f4f5;
+    color: red;
+}
+
+.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+
+    color: #71717a;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-top: 12px;
+}
+
+.quantityButton {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #f4f4f5;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    transition: 0.3s ease;
+}
+
+.quantityButton:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.itemPrice {
+    margin-top: 12px;
+
+    font-weight: 700;
+}
+
+.subtotal {
+    margin-top: 6px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    color: var(--color-primary);
+}
+
+@keyframes slideIn {
+
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+
+}

@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Product {
+  id String @id @default(uuid())
+  title       String
+  slug        String  @unique
+  description String?
+  category String
+  image    String
+  unit String
+  usefulWidth Float
+  fullWidth   Float
+  variants ProductVariant[]
+  createdAt DateTime @default(now())
+}
+
+model ProductVariant {
+  id           String   @id @default(uuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  thickness    Float
+  color        String
+  coating      String
+  // Matt / Gloss / Zinc
+  paintingType String
+  // OneSide / TwoSide
+  metalBrand   String
+  // POLYSTEEL (Україна) / U.S. Steel (Словаччина) / Module (Україна) / ArcelorMittal (Німеччика) / ArcelorMittal (Польща) / Dongbu Steel (Корея)
+  zincContent  Int
+  // 80 / 100 / 140 / 225
+  price        Int
+  inStock      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+
+model FencePost {
+  id        String @id @default(cuid())
+  title     String
+  size      String
+  thickness Float
+  length    Float
+  price     Float
+  createdAt DateTime @default(now())
+}
+
+model FenceLag {
+  id        String @id @default(cuid())
+  title     String
+  size      String
+  thickness Float
+  length    Float
+  price     Float
+  createdAt DateTime @default(now())
+}
+
+model FenceScrew {
+  id        String @id @default(cuid())
+  title     String
+  size      String
+  price     Float
+  createdAt DateTime @default(now())
+}
