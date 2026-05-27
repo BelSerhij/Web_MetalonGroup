@@ -18,6 +18,16 @@ export default function CheckoutPage() {
       0
     );
 
+  const handleSubmit = (
+    e: React.FormEvent
+  ) => {
+
+    e.preventDefault();
+
+    console.log(items);
+
+  };
+
   return (
     <main className={styles.page}>
 
@@ -27,35 +37,50 @@ export default function CheckoutPage() {
           Оформлення замовлення
         </h1>
 
+        {!items.length ? (
+
+          <div className={styles.empty}>
+            Кошик порожній
+          </div>
+
+        ) : (
+
         <div className={styles.wrapper}>
 
           {/* FORM */}
 
-          <form className={styles.form}>
+          <form
+            className={styles.form}
+            onSubmit={handleSubmit}
+          >
 
             <input
               type="text"
               placeholder="Ваше ім’я"
+              required
             />
 
             <input
               type="tel"
               placeholder="Телефон"
+              required
             />
 
             <input
               type="text"
               placeholder="Місто"
+              required
             />
 
             <input
               type="text"
               placeholder="Відділення Нової Пошти"
+              required
             />
 
             <textarea
               placeholder="Коментар"
-            />
+            ></textarea>
 
             <button
               type="submit"
@@ -90,7 +115,10 @@ export default function CheckoutPage() {
                   <p>
                     {item.quantity}
                     ×
-                    {item.price} грн
+                    {' '}
+                    {item.price}
+                    {' '}
+                    грн
                   </p>
 
                 </div>
@@ -101,12 +129,17 @@ export default function CheckoutPage() {
 
             <div className={styles.total}>
               Разом:
-              {totalPrice} грн
+              {' '}
+              {totalPrice}
+              {' '}
+              грн
             </div>
 
           </div>
 
         </div>
+
+        )}
 
       </div>
 

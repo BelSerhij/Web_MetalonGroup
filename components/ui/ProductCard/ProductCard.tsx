@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 import styles from './ProductCard.module.css';
 
@@ -6,15 +7,22 @@ interface Props {
   title: string;
   price: string;
   image: string;
+  slug: string;
 }
 
 export const ProductCard = ({
   title,
   price,
   image,
+  slug,
 }: Props) => {
   return (
-    <article className={styles.card}>
+
+    <Link
+      href={`/catalog/${slug}`}
+      className={styles.card}
+    >
+
       <div className={styles.imageWrapper}>
         <Image
           src={image}
@@ -26,7 +34,9 @@ export const ProductCard = ({
       </div>
 
       <div className={styles.content}>
+
         <div>
+
           <h3 className={styles.title}>
             {title}
           </h3>
@@ -34,12 +44,15 @@ export const ProductCard = ({
           <p className={styles.price}>
             {price}
           </p>
+
         </div>
 
-        <button className={styles.button}>
-          Замовити
-        </button>
+        <span className={styles.button}>
+          Детальніше
+        </span>
+
       </div>
-    </article>
+
+    </Link>
   );
 };

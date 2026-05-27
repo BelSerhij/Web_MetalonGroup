@@ -42,7 +42,9 @@ export default async function CatalogPage({
               category: selectedCategory,
             }
           : undefined,
-
+      include: {
+      variants: true,
+    },
       orderBy: {
         createdAt: 'desc',
       },
@@ -111,7 +113,11 @@ export default async function CatalogPage({
                   </h2>
 
                   <p className={styles.price}>
-                    {item.price} грн/{item.unit}
+                    від {Math.min(
+                      ...item.variants.map(
+                        (variant) => variant.price
+                      )
+                    )} грн/{item.unit}
                   </p>
                   <div className={styles.cardActions}>
 
@@ -122,7 +128,22 @@ export default async function CatalogPage({
                       Детальніше
                     </Link>
 
-                    <AddToCartButton product={item} />
+                    <AddToCartButton
+                      product={{
+                        id: item.id,
+                        title: item.title,
+
+                        price: Math.min(
+                          ...item.variants.map(
+                            (variant) => variant.price
+                          )
+                        ),
+
+                        image: item.image,
+                        slug: item.slug,
+                        unit: item.unit,
+                      }}
+                    />
 
                   </div>
                 </div>
