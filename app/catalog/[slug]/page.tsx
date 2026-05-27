@@ -24,6 +24,9 @@ export default async function ProductPage({
       where: {
         slug,
       },
+       include: {
+      variants: true,
+    },
     });
 
   if (!product) {
@@ -68,7 +71,11 @@ export default async function ProductPage({
             </h1>
 
             <p className={styles.price}>
-              {product.price} грн/{product.unit}
+              від {Math.min(
+                ...product.variants.map(
+                  (variant) => variant.price
+                )
+              )} грн/{product.unit}
             </p>
 
             <p className={styles.description}>
@@ -81,7 +88,7 @@ export default async function ProductPage({
             product={{
                 id: product.id,
                 title: product.title,
-                price: product.price,
+                price:  Math.min(...product.variants.map((variant) => variant.price)),
                 image: product.image,
                 slug: product.slug,
                 unit: product.unit,
