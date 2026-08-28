@@ -1,22 +1,15 @@
 import './globals.css';
-import { Header } from '../components/layout/Header/Header';
-import { Footer } from '../components/layout/Footer/Footer';
-import { CartDrawer } from '../components/Drawer/CartDrawer';
+
+import type { ReactNode } from 'react';
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="uk">
-      <body>
-        <Header />
-        {children}
-
-        <Footer />
-        <CartDrawer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

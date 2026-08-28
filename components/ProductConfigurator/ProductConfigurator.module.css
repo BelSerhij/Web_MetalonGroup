@@ -1,0 +1,409 @@
+.configurator {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    width: 100%;
+    margin-top: 24px;
+}
+
+.title {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* =========================
+   Групи параметрів
+========================= */
+
+.group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.label {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* =========================
+   Статус наявності
+========================= */
+
+.inStock,
+.toOrder {
+    margin-top: 2px;
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.inStock {
+    color: #2e7d32;
+}
+
+.toOrder {
+    color: #d97706;
+}
+
+/* =========================
+   Звичайні кнопки
+========================= */
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 10px 16px;
+
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+
+    background: #fff;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.option:hover {
+    border-color: #f3a407;
+    transform: translateY(-1px);
+}
+
+.optionActive {
+    border-color: #222;
+    background-color: #222;
+    color: #fff;
+}
+
+.optionToOrder {
+    border-style: dashed;
+    opacity: 0.7;
+}
+
+.optionStatus {
+    display: block;
+    margin-top: 3px;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+/* =========================
+   Кольори RAL
+========================= */
+
+.colorGrid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(85px, 1fr));
+
+    gap: 12px;
+}
+
+.colorCard {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #dedede;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.colorCard:hover {
+    border-color: #f3a407;
+
+    transform: translateY(-2px);
+}
+
+.colorCardActive {
+    border: 2px solid #222;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.colorPreview {
+    display: block;
+
+    width: 100%;
+    height: 40px;
+
+    border-bottom:
+        1px solid rgba(0, 0, 0, 0.1);
+}
+
+.colorInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 0;
+
+    padding: 4px 5px 6px;
+
+    line-height: 1.1;
+}
+
+.colorCode {
+    margin: 0;
+    padding: 0;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.1;
+
+    color: #222;
+}
+
+.colorName {
+    margin: 0;
+    padding: 0;
+
+    font-size: 11px;
+    line-height: 1.1;
+
+    color: #777;
+}
+
+.check {
+    position: absolute;
+
+    top: 5px;
+    right: 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 20px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: #c4f5b8;
+    color: #f3a407;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    box-shadow:
+        0 1px 5px rgba(239, 177, 5, 0.2);
+}
+
+/* =========================
+   Інформація про товар
+========================= */
+
+.info {
+    display: grid;
+    gap: 10px;
+
+    padding: 18px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+
+    background: #f8f8f8;
+}
+
+.infoItem {
+    display: flex;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    font-size: 14px;
+}
+
+.infoLabel {
+    color: #777;
+}
+
+.infoValue {
+    font-weight: 600;
+    text-align: right;
+}
+
+/* =========================
+   Кількість
+========================= */
+
+.quantityWrapper {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+
+    overflow: hidden;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.quantityButton {
+    width: 42px;
+    height: 42px;
+
+    border: none;
+
+    background: #fff;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease;
+}
+
+.quantityButton:hover {
+    background: #f1f1f1;
+}
+
+.quantityValue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 45px;
+
+    font-weight: 600;
+}
+
+/* =========================
+   Загальна ціна
+========================= */
+
+.total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-top: 20px;
+
+    border-top:
+        1px solid #e5e5e5;
+}
+
+.totalLabel {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.totalPrice {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* =========================
+   Кнопка кошика
+========================= */
+
+.addButton {
+    width: 100%;
+    min-height: 54px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #222;
+    color: #fff;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.addButton:hover {
+    background: #000;
+
+    transform: translateY(-1px);
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 600px) {
+
+    .colorGrid {
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 8px;
+    }
+
+    .colorPreview {
+        height: 40px;
+    }
+
+    .colorCode {
+        font-size: 12px;
+    }
+
+    .colorName {
+        font-size: 10px;
+    }
+
+    .colorInfo {
+        padding: 4px 3px 5px;
+    }
+
+    .infoItem {
+        flex-direction: column;
+
+        gap: 4px;
+    }
+
+    .infoValue {
+        text-align: left;
+    }
+
+    .totalPrice {
+        font-size: 22px;
+    }
+}

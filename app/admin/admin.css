@@ -1,0 +1,2494 @@
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f6f8;
+    color: #18181b;
+}
+
+.admin-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 260px;
+    height: 100vh;
+
+    background: #171717;
+    color: #fff;
+
+    border-right: 1px solid #262626;
+}
+
+.admin-logo {
+    padding: 24px;
+    border-bottom: 1px solid #333;
+}
+
+.admin-logo a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.admin-logo span {
+    display: block;
+    margin-top: 2px;
+    color: #999;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 12px;
+    overflow-y: auto;
+}
+
+.admin-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-height: 44px;
+    padding: 0 14px;
+
+    color: #aaa;
+    text-decoration: none;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition:
+        background-color 0.18s ease,
+        color 0.18s ease;
+}
+
+.admin-nav-link:hover {
+    background: #292929;
+    color: #fff;
+}
+
+.admin-nav-link.active {
+    background: #fff;
+    color: #171717;
+}
+
+.admin-sidebar-footer {
+    margin-top: auto;
+    padding: 12px;
+    border-top: 1px solid #333;
+}
+
+.admin-logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 44px;
+    padding: 0 14px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #aaa;
+
+    font: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.18s ease,
+        color 0.18s ease;
+}
+
+.admin-logout:hover {
+    background: #292929;
+    color: #fff;
+}
+
+.admin-main {
+    width: calc(100% - 260px);
+    min-width: 0;
+    margin-left: 260px;
+}
+
+.admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    min-height: 72px;
+    padding: 0 28px;
+
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid #e5e5e5;
+
+    backdrop-filter: blur(10px);
+}
+
+.admin-header-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: min(360px, 100%);
+    min-height: 40px;
+    padding: 0 13px;
+
+    background: #f3f4f6;
+    border: 1px solid #eceef1;
+    border-radius: 8px;
+}
+
+.admin-header-search input {
+    width: 100%;
+    min-width: 0;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: #18181b;
+    font-size: 14px;
+}
+
+.admin-header-search input::placeholder {
+    color: #9ca3af;
+}
+
+.admin-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.admin-icon-button {
+    display: grid;
+    place-items: center;
+
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+
+    background: #f8f9fb;
+    color: #4b5563;
+
+    cursor: pointer;
+}
+
+.admin-icon-button:hover {
+    background: #eef2f7;
+    color: #18181b;
+}
+
+.admin-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-user-avatar {
+    display: grid;
+    place-items: center;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    background: #171717;
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-user p {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-user span {
+    display: block;
+    margin-top: 2px;
+    color: #888;
+    font-size: 11px;
+}
+
+.admin-content {
+    min-height: calc(100vh - 72px);
+    padding: 28px;
+    background: #f5f6f8;
+}
+
+/* =========================================================
+   TYPOGRAPHY / COMMON
+   ========================================================= */
+
+.admin-page-header {
+    margin-bottom: 26px;
+}
+
+.admin-page-header h1 {
+    margin: 0;
+    color: #171717;
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 800;
+}
+
+.admin-page-header p {
+    margin: 8px 0 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.admin-page-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.admin-page-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-section-card {
+    margin-bottom: 20px;
+    padding: 24px;
+
+    background: #fff;
+
+    border: 1px solid #e4e4e7;
+    border-radius: 12px;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03),
+        0 6px 18px rgba(0, 0, 0, 0.03);
+}
+
+.admin-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.admin-section-header h2 {
+    margin: 0;
+    color: #18181b;
+    font-size: 20px;
+    line-height: 1.25;
+    font-weight: 750;
+}
+
+.admin-section-header p {
+    margin: 6px 0 0;
+    color: #71717a;
+    font-size: 13px;
+}
+
+.admin-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 180px;
+    padding: 32px;
+
+    color: #9ca3af;
+
+    text-align: center;
+}
+
+.admin-empty p {
+    margin: 0;
+    color: #71717a;
+    font-weight: 600;
+}
+
+.admin-empty span {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.admin-primary-button,
+.admin-secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 40px;
+    padding: 0 16px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.admin-primary-button {
+    background: #1677ff;
+    border: 1px solid #1677ff;
+    color: #fff;
+}
+
+.admin-primary-button:hover:not(:disabled) {
+    background: #0f68e8;
+    border-color: #0f68e8;
+}
+
+.admin-primary-button:disabled,
+.admin-secondary-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.admin-secondary-button {
+    background: #fff;
+    border: 1px solid #dfe3e9;
+    color: #4b5563;
+}
+
+.admin-secondary-button:hover:not(:disabled) {
+    background: #f7f9fc;
+    border-color: #c8d0dc;
+    color: #18181b;
+}
+
+.admin-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+    color: #171717;
+    text-decoration: none;
+}
+
+.admin-action-button:hover {
+    background: #e5e7eb;
+}
+
+.admin-action-button-danger {
+    color: #dc2626;
+    border-color: #fecaca;
+    background: #fff;
+}
+
+.admin-action-button-danger:hover {
+    background: #fef2f2;
+    border-color: #dc2626;
+}
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+.admin-form {
+    width: 100%;
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.admin-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.admin-form-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #27272a;
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.admin-form-group input,
+.admin-form-group select,
+.admin-form-group textarea {
+    width: 100%;
+    min-height: 42px;
+
+    padding: 0 12px;
+
+    border: 1px solid #d4d4d8;
+    border-radius: 8px;
+
+    background: #fff;
+    color: #18181b;
+
+    font: inherit;
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.admin-form-group textarea {
+    min-height: 110px;
+    padding: 11px 12px;
+    resize: vertical;
+}
+
+.admin-form-group input:focus,
+.admin-form-group select:focus,
+.admin-form-group textarea:focus {
+    border-color: #8ebcff;
+    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.09);
+}
+
+.admin-form-group small {
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+.admin-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+
+    margin-top: 24px;
+    padding-top: 20px;
+
+    border-top: 1px solid #e4e4e7;
+}
+
+.admin-form-error {
+    margin: 12px 0 0;
+    padding: 11px 13px;
+
+    color: #b93636;
+
+    background: #fff0f0;
+    border: 1px solid #f5cccc;
+    border-radius: 8px;
+
+    font-size: 12px;
+}
+
+/* =========================================================
+   TABLES
+   ========================================================= */
+
+.admin-table-card {
+    overflow: hidden;
+
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03),
+        0 6px 18px rgba(0, 0, 0, 0.03);
+}
+
+.admin-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    padding: 12px 16px;
+
+    background: #f8f8f8;
+    border-bottom: 1px solid #e5e5e5;
+
+    color: #777;
+
+    font-size: 11px;
+    font-weight: 700;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.admin-table td {
+    padding: 14px 16px;
+
+    border-bottom: 1px solid #eeeeee;
+
+    color: #333;
+    font-size: 13px;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tbody tr:hover {
+    background: #fafafa;
+}
+
+/* =========================================================
+   PRODUCTS / STOCK / COMMON DATA
+   ========================================================= */
+
+.admin-product-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-product-image {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    background: #f3f4f6;
+    border-radius: 8px;
+}
+
+.admin-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-product-cell strong {
+    display: block;
+    color: #171717;
+}
+
+.admin-product-cell span {
+    display: block;
+    margin-top: 3px;
+    color: #999;
+    font-size: 11px;
+}
+
+.admin-coil-stock {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.admin-coil-stock strong {
+    color: #18181b;
+    font-size: 14px;
+}
+
+.admin-coil-stock span {
+    color: #71717a;
+    font-size: 12px;
+}
+
+.admin-status,
+.admin-status-success,
+.admin-status-muted,
+.admin-status-warning,
+.admin-status-danger,
+.admin-status-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 26px;
+    padding: 0 9px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.admin-status-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.admin-status-muted {
+    background: #f4f4f5;
+    color: #71717a;
+}
+
+.admin-status-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.admin-status-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.admin-status-info {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+/* =========================================================
+   STATS
+   ========================================================= */
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.admin-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 20px;
+
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+}
+
+.admin-stat-icon {
+    display: grid;
+    place-items: center;
+
+    width: 48px;
+    height: 48px;
+
+    background: #f3f4f6;
+    border-radius: 10px;
+
+    color: #18181b;
+}
+
+.admin-stat-card p {
+    margin: 0;
+    color: #777;
+    font-size: 12px;
+}
+
+.admin-stat-card h2 {
+    margin: 4px 0 0;
+    color: #171717;
+    font-size: 23px;
+}
+
+/* =========================================================
+   PRODUCT DETAILS
+   ========================================================= */
+
+.admin-product-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.admin-product-details>div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-product-details span,
+.admin-product-description span {
+    color: #71717a;
+    font-size: 12px;
+}
+
+.admin-product-details strong {
+    color: #18181b;
+    font-size: 14px;
+}
+
+.admin-product-description {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e4e4e7;
+}
+
+.admin-product-description p {
+    margin: 7px 0 0;
+    color: #3f3f46;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   MISC
+   ========================================================= */
+
+.admin-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 14px;
+
+    color: #71717a;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.admin-back-link:hover {
+    color: #18181b;
+}
+
+.admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-actions form {
+    margin: 0;
+}
+
+.admin-readonly-value {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 12px;
+
+    background: #f8f9fb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+    color: #4b5563;
+    font-size: 13px;
+}
+
+.admin-note {
+    margin: 0;
+    color: #3f3f46;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+    .admin-content {
+        padding: 22px;
+    }
+
+    .admin-header {
+        padding: 0 22px;
+    }
+
+    .admin-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-product-details {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .admin-sidebar {
+        width: 220px;
+    }
+
+    .admin-main {
+        width: calc(100% - 220px);
+        margin-left: 220px;
+    }
+
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .admin-sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+    }
+
+    .admin-layout {
+        display: block;
+    }
+
+    .admin-main {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .admin-header {
+        position: static;
+        min-height: 64px;
+        padding: 10px 14px;
+    }
+
+    .admin-header-search {
+        display: none;
+    }
+
+    .admin-content {
+        padding: 14px;
+    }
+
+    .admin-page-header-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-page-actions {
+        width: 100%;
+    }
+
+    .admin-page-actions a,
+    .admin-page-actions button {
+        width: 100%;
+    }
+
+    .admin-stats,
+    .admin-product-details {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-section-card {
+        padding: 16px;
+        border-radius: 10px;
+    }
+
+    .admin-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .admin-form-actions a,
+    .admin-form-actions button {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   METALON GROUP — PRODUCTION UI
+   Integrated into the single admin.css file.
+   Main unit: м.п.
+   kg: automatic reference information.
+   ========================================================= */
+
+.metal-production-page {
+    --production-blue: #2563eb;
+    --production-blue-soft: #eff6ff;
+    --production-blue-border: #bfdbfe;
+    --production-green: #15803d;
+    --production-green-soft: #f0fdf4;
+    --production-green-border: #bbf7d0;
+    --production-red: #b91c1c;
+    --production-red-soft: #fef2f2;
+    --production-red-border: #fecaca;
+    --production-gray: #6b7280;
+    --production-bg: #f5f6f8;
+    --production-card: #ffffff;
+    --production-border: #e5e7eb;
+    --production-text: #18181b;
+
+    min-height: 100%;
+    color: var(--production-text);
+}
+
+/* =========================================================
+   PRODUCTION LIST / HEADER
+   ========================================================= */
+
+.metal-production-page .metal-production-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 18px;
+    padding: 20px 22px;
+
+    background: #ffffff;
+    border: 1px solid var(--production-border);
+    border-radius: 12px;
+}
+
+.metal-production-page .metal-production-topbar-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.metal-production-page .metal-production-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    color: #4b5563;
+    background: #f9fafb;
+    border: 1px solid var(--production-border);
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    transition: 0.18s ease;
+}
+
+.metal-production-page .metal-production-back:hover {
+    color: var(--production-blue);
+    background: var(--production-blue-soft);
+    border-color: var(--production-blue-border);
+}
+
+.metal-production-page .metal-production-breadcrumb {
+    margin-bottom: 4px;
+
+    color: #9ca3af;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.metal-production-page .metal-production-topbar h1 {
+    margin: 0;
+
+    color: var(--production-text);
+
+    font-size: 30px;
+    line-height: 1.15;
+    font-weight: 800;
+}
+
+.metal-production-page .metal-production-topbar-right {
+    flex-shrink: 0;
+}
+
+.metal-production-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 28px;
+    padding: 0 10px;
+
+    border-radius: 7px;
+
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.metal-production-status.blue {
+    color: #1d4ed8;
+    background: var(--production-blue-soft);
+}
+
+.metal-production-status.green {
+    color: var(--production-green);
+    background: var(--production-green-soft);
+}
+
+.metal-production-status.gray {
+    color: #4b5563;
+    background: #f3f4f6;
+}
+
+.metal-production-status.red {
+    color: var(--production-red);
+    background: var(--production-red-soft);
+}
+
+.metal-production-page .metal-production-order-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+
+    margin-top: 8px;
+}
+
+.metal-production-page .metal-production-order-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    color: #6b7280;
+    font-size: 11px;
+}
+
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+
+.metal-production-page .metal-production-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.metal-production-page .metal-production-summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    padding: 16px 18px;
+
+    background: #ffffff;
+    border: 1px solid var(--production-border);
+    border-radius: 10px;
+}
+
+.metal-production-page .metal-production-summary-card.primary {
+    border-color: var(--production-blue-border);
+    background: linear-gradient(180deg,
+            #f5f9ff 0%,
+            #ffffff 100%);
+}
+
+.metal-production-page .metal-production-summary-card-icon {
+    display: grid;
+    place-items: center;
+
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    color: var(--production-blue);
+    background: var(--production-blue-soft);
+    border-radius: 8px;
+}
+
+.metal-production-page .metal-production-summary-card span {
+    display: block;
+
+    color: #7c8494;
+
+    font-size: 11px;
+}
+
+.metal-production-page .metal-production-summary-card strong {
+    display: block;
+
+    margin-top: 4px;
+
+    color: var(--production-text);
+
+    font-size: 18px;
+}
+
+/* =========================================================
+   LAYOUT / CARDS
+   ========================================================= */
+
+.metal-production-page .metal-production-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 18px;
+    align-items: start;
+}
+
+.metal-production-page .metal-production-main {
+    display: grid;
+    gap: 18px;
+
+    min-width: 0;
+}
+
+.metal-production-page .metal-production-sidebar {
+    display: grid;
+    gap: 18px;
+
+    min-width: 0;
+}
+
+.metal-production-page .metal-production-card {
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid var(--production-border);
+    border-radius: 12px;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03),
+        0 5px 16px rgba(0, 0, 0, 0.03);
+}
+
+.metal-production-page .metal-production-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+
+    padding: 18px 20px;
+
+    border-bottom: 1px solid var(--production-border);
+}
+
+.metal-production-page .metal-production-card-header h2 {
+    margin: 0;
+
+    color: var(--production-text);
+
+    font-size: 18px;
+    line-height: 1.25;
+}
+
+.metal-production-page .metal-production-card-header p {
+    margin: 6px 0 0;
+
+    color: #71717a;
+
+    font-size: 12px;
+}
+
+.metal-production-page .metal-production-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-bottom: 4px;
+
+    color: var(--production-blue);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   CUSTOMER
+   ========================================================= */
+
+.metal-production-page .metal-production-customer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.metal-production-page .metal-production-customer>div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 14px 18px;
+
+    border-bottom: 1px solid var(--production-border);
+}
+
+.metal-production-page .metal-production-customer>div:nth-last-child(-n + 2) {
+    border-bottom: 0;
+}
+
+.metal-production-page .metal-production-customer span {
+    color: #9ca3af;
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-customer strong {
+    color: var(--production-text);
+    font-size: 13px;
+}
+
+/* =========================================================
+   ORDER TABLE
+   ========================================================= */
+
+.metal-production-page .metal-production-table-wrap {
+    overflow-x: auto;
+}
+
+.metal-production-page .metal-production-table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+}
+
+.metal-production-page .metal-production-table th {
+    padding: 10px 14px;
+
+    background: #fafbfc;
+    border-bottom: 1px solid var(--production-border);
+
+    color: #7b8492;
+
+    font-size: 10px;
+    font-weight: 700;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.metal-production-page .metal-production-table td {
+    padding: 13px 14px;
+
+    color: #4b5563;
+
+    font-size: 12px;
+
+    border-bottom: 1px solid #f0f1f3;
+
+    vertical-align: middle;
+}
+
+.metal-production-page .metal-production-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.metal-production-page .metal-production-table tbody tr:hover {
+    background: #fbfcfe;
+}
+
+.metal-production-page .metal-production-table td strong {
+    color: var(--production-text);
+}
+
+.metal-production-page .metal-production-table td small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #9ca3af;
+
+    font-size: 10px;
+}
+
+/* =========================================================
+   SELECTOR
+   ========================================================= */
+
+.metal-production-page .metal-production-selector {
+    padding: 18px 20px 20px;
+}
+
+.metal-production-page .metal-production-selector-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-bottom: 15px;
+}
+
+.metal-production-page .metal-production-selector-head h2 {
+    margin: 0;
+
+    color: var(--production-text);
+
+    font-size: 18px;
+}
+
+.metal-production-page .metal-production-selector-head p {
+    margin: 6px 0 0;
+
+    max-width: 620px;
+
+    color: #71717a;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.metal-production-page .metal-production-selector-total {
+    min-width: 145px;
+
+    padding: 11px 13px;
+
+    background: var(--production-blue-soft);
+    border: 1px solid var(--production-blue-border);
+    border-radius: 8px;
+
+    text-align: right;
+}
+
+.metal-production-page .metal-production-selector-total span {
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-selector-total strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #1d4ed8;
+
+    font-size: 17px;
+}
+
+.metal-production-page .metal-production-selector-total small {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #64748b;
+
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-requirements {
+    display: grid;
+    gap: 8px;
+}
+
+.metal-production-page .metal-production-requirement {
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid var(--production-border);
+    border-radius: 9px;
+}
+
+.metal-production-page .metal-production-requirement-open {
+    border-color: #c9dcfb;
+}
+
+.metal-production-page .metal-production-requirement-header {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) auto auto 24px;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+
+    padding: 12px 13px;
+
+    border: 0;
+
+    background: #ffffff;
+
+    color: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.metal-production-page .metal-production-requirement-header:hover {
+    background: #fbfdff;
+}
+
+.metal-production-page .metal-production-requirement-index {
+    display: grid;
+    place-items: center;
+
+    width: 24px;
+    height: 24px;
+
+    border-radius: 7px;
+
+    color: #1d4ed8;
+    background: var(--production-blue-soft);
+
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.metal-production-page .metal-production-requirement-title {
+    min-width: 0;
+}
+
+.metal-production-page .metal-production-requirement-title strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: var(--production-text);
+
+    font-size: 13px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.metal-production-page .metal-production-requirement-title small {
+    display: block;
+
+    margin-top: 3px;
+
+    overflow: hidden;
+
+    color: #8a93a1;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.metal-production-page .metal-production-requirement-meters {
+    min-width: 74px;
+
+    text-align: right;
+}
+
+.metal-production-page .metal-production-requirement-meters strong {
+    display: block;
+
+    color: var(--production-text);
+
+    font-size: 12px;
+}
+
+.metal-production-page .metal-production-requirement-meters small {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #9ca3af;
+
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-selected-coil {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 5px 7px;
+
+    color: var(--production-green);
+
+    background: var(--production-green-soft);
+
+    border-radius: 6px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.metal-production-page .metal-production-chevron-open {
+    transform: rotate(180deg);
+}
+
+.metal-production-page .metal-production-requirement-body {
+    padding: 0 13px 14px;
+
+    border-top: 1px solid var(--production-border);
+    background: #fcfdff;
+}
+
+.metal-production-page .metal-production-material-specs {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+
+    padding: 12px 0;
+}
+
+.metal-production-page .metal-production-material-specs>div {
+    min-width: 0;
+
+    padding: 9px 10px;
+
+    background: #f8f9fb;
+    border: 1px solid #edf0f3;
+    border-radius: 7px;
+}
+
+.metal-production-page .metal-production-material-specs span {
+    display: block;
+
+    color: #9ca3af;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-material-specs strong {
+    display: block;
+
+    margin-top: 3px;
+
+    overflow: hidden;
+
+    color: var(--production-text);
+
+    font-size: 11px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.metal-production-page .metal-production-coil-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 8px;
+}
+
+.metal-production-page .metal-production-coil-title>div {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.metal-production-page .metal-production-coil-title strong {
+    color: var(--production-text);
+
+    font-size: 12px;
+}
+
+.metal-production-page .metal-production-coil-title>span {
+    color: #7c8494;
+
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-coils {
+    display: grid;
+    gap: 6px;
+}
+
+.metal-production-page .metal-production-coil {
+    display: grid;
+    grid-template-columns: 25px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+
+    padding: 10px 11px;
+
+    border: 1px solid #e4e7eb;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: 0.15s ease;
+}
+
+.metal-production-page .metal-production-coil:hover:not(:disabled) {
+    border-color: #bfdbfe;
+    background: #fbfdff;
+}
+
+.metal-production-page .metal-production-coil-selected {
+    border-color: #93c5fd !important;
+    background: #eff6ff !important;
+    box-shadow: inset 0 0 0 1px #93c5fd;
+}
+
+.metal-production-page .metal-production-coil-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.metal-production-page .metal-production-coil-check {
+    display: grid;
+    place-items: center;
+
+    width: 25px;
+    height: 25px;
+
+    border-radius: 6px;
+
+    color: #2563eb;
+    background: #f1f5f9;
+}
+
+.metal-production-page .metal-production-coil-main {
+    min-width: 0;
+}
+
+.metal-production-page .metal-production-coil-main strong {
+    display: block;
+
+    color: var(--production-text);
+
+    font-size: 12px;
+}
+
+.metal-production-page .metal-production-coil-main span {
+    display: block;
+
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    color: #8a93a1;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.metal-production-page .metal-production-coil-metrics {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.metal-production-page .metal-production-coil-metrics>div {
+    min-width: 76px;
+
+    text-align: right;
+}
+
+.metal-production-page .metal-production-coil-metrics span {
+    display: block;
+
+    color: #9ca3af;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-coil-metrics strong {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--production-text);
+
+    font-size: 11px;
+}
+
+.metal-production-page .metal-production-coil-warning {
+    grid-column: 2 / -1;
+
+    color: var(--production-red);
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.metal-production-page .metal-production-selected-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+
+    margin-top: 8px;
+}
+
+.metal-production-page .metal-production-selected-summary>div {
+    padding: 9px 10px;
+
+    background: #ffffff;
+    border: 1px solid var(--production-border);
+    border-radius: 7px;
+}
+
+.metal-production-page .metal-production-selected-summary span {
+    display: block;
+
+    color: #9ca3af;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-selected-summary strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--production-text);
+
+    font-size: 12px;
+}
+
+.metal-production-page .metal-production-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    min-height: 130px;
+
+    color: #9ca3af;
+
+    text-align: center;
+}
+
+.metal-production-page .metal-production-empty strong {
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+.metal-production-page .metal-production-empty span {
+    color: #9ca3af;
+
+    font-size: 10px;
+}
+
+/* Start bar */
+.metal-production-page .metal-production-start-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    margin-top: 12px;
+    padding-top: 13px;
+
+    border-top: 1px solid var(--production-border);
+}
+
+.metal-production-page .metal-production-start-bar>div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.metal-production-page .metal-production-start-bar span {
+    color: #9ca3af;
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-start-bar strong {
+    color: var(--production-text);
+    font-size: 13px;
+}
+
+/* =========================================================
+   COMPLETE PRODUCTION FORM
+   ========================================================= */
+
+.metal-production-page .metal-production-complete {
+    padding: 18px 20px 20px;
+}
+
+.metal-production-page .metal-production-complete-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding-bottom: 14px;
+
+    border-bottom: 1px solid var(--production-border);
+}
+
+.metal-production-page .metal-production-complete-header h3 {
+    margin: 0;
+
+    color: var(--production-text);
+
+    font-size: 16px;
+}
+
+.metal-production-page .metal-production-complete-header p {
+    max-width: 640px;
+
+    margin: 5px 0 0;
+
+    color: #71717a;
+
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.metal-production-page .metal-production-live-weight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+
+    min-width: 110px;
+}
+
+.metal-production-page .metal-production-live-weight svg {
+    color: var(--production-blue);
+}
+
+.metal-production-page .metal-production-live-weight span {
+    color: #9ca3af;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-live-weight strong {
+    color: var(--production-blue);
+
+    font-size: 14px;
+}
+
+.metal-production-page .metal-production-facts {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr 1fr;
+    gap: 8px;
+
+    margin-top: 14px;
+}
+
+.metal-production-page .metal-production-fact-primary,
+.metal-production-page .metal-production-form-field {
+    padding: 12px;
+
+    background: #f9fafb;
+
+    border: 1px solid #edf0f3;
+    border-radius: 8px;
+}
+
+.metal-production-page .metal-production-fact-primary label,
+.metal-production-page .metal-production-form-field label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-bottom: 6px;
+
+    color: #4b5563;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.metal-production-page .metal-production-input-with-unit {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #dfe3e9;
+    border-radius: 7px;
+}
+
+.metal-production-page .metal-production-input-with-unit input {
+    width: 100%;
+    min-height: 38px;
+
+    padding: 0 10px;
+
+    border: 0;
+    outline: 0;
+
+    color: var(--production-text);
+    background: transparent;
+
+    font: inherit;
+    font-size: 13px;
+}
+
+.metal-production-page .metal-production-input-with-unit span {
+    padding: 0 10px;
+
+    color: #6b7280;
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.metal-production-page .metal-production-fact-primary small,
+.metal-production-page .metal-production-form-field small {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #9ca3af;
+
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+.metal-production-page .metal-production-auto-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+
+    margin-top: 10px;
+}
+
+.metal-production-page .metal-production-auto-summary>div {
+    padding: 11px 12px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--production-border);
+    border-radius: 8px;
+}
+
+.metal-production-page .metal-production-auto-summary span {
+    display: block;
+
+    color: #8b95a3;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-auto-summary strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--production-text);
+
+    font-size: 14px;
+}
+
+.metal-production-page .metal-production-auto-summary small {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #9ca3af;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-error {
+    margin-top: 9px;
+    padding: 10px 12px;
+
+    color: var(--production-red);
+
+    background: var(--production-red-soft);
+
+    border: 1px solid var(--production-red-border);
+    border-radius: 7px;
+
+    font-size: 11px;
+}
+
+.metal-production-page .metal-production-complete-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-top: 12px;
+    padding-top: 12px;
+
+    border-top: 1px solid var(--production-border);
+}
+
+.metal-production-page .metal-production-complete-actions>span {
+    max-width: 620px;
+
+    color: #8a93a1;
+
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+/* =========================================================
+   LIVE COILS / SIDEBAR / HELP
+   ========================================================= */
+
+.metal-production-page .metal-production-coil-live-list {
+    display: grid;
+}
+
+.metal-production-page .metal-production-coil-live-card {
+    display: grid;
+    grid-template-columns: minmax(130px, 1fr) repeat(3, minmax(90px, auto));
+    gap: 12px;
+
+    padding: 13px 18px;
+
+    border-bottom: 1px solid var(--production-border);
+}
+
+.metal-production-page .metal-production-coil-live-card:last-child {
+    border-bottom: 0;
+}
+
+.metal-production-page .metal-production-coil-live-card span {
+    display: block;
+
+    color: #9ca3af;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-coil-live-card strong {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--production-text);
+
+    font-size: 12px;
+}
+
+.metal-production-page .metal-production-sidebar-stats {
+    display: grid;
+
+    padding: 0 18px;
+}
+
+.metal-production-page .metal-production-sidebar-stats>div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 11px 0;
+
+    border-bottom: 1px solid var(--production-border);
+}
+
+.metal-production-page .metal-production-sidebar-stats>div:last-child {
+    border-bottom: 0;
+}
+
+.metal-production-page .metal-production-sidebar-stats span {
+    color: #9ca3af;
+
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-sidebar-stats strong {
+    color: var(--production-text);
+
+    font-size: 12px;
+    text-align: right;
+}
+
+.metal-production-page .metal-production-sidebar-stats .primary {
+    align-items: flex-end;
+
+    padding: 15px 0;
+}
+
+.metal-production-page .metal-production-sidebar-stats .primary strong {
+    color: var(--production-blue);
+
+    font-size: 22px;
+}
+
+.metal-production-page .metal-production-sidebar-progress {
+    display: grid;
+    gap: 8px;
+
+    margin: 0 18px;
+    padding-top: 12px;
+
+    border-top: 1px solid var(--production-border);
+}
+
+.metal-production-page .metal-production-sidebar-progress>div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.metal-production-page .metal-production-sidebar-progress span {
+    color: #9ca3af;
+
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-sidebar-progress strong {
+    color: var(--production-text);
+
+    font-size: 11px;
+}
+
+.metal-production-page .metal-production-unit-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+
+    margin: 12px 18px 18px;
+    padding: 10px;
+
+    color: #64748b;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.metal-production-page .metal-production-unit-note svg {
+    color: var(--production-blue);
+
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   PAYMENT / NOTE / EMPTY
+   ========================================================= */
+
+.metal-production-page .metal-production-payment {
+    display: grid;
+    gap: 10px;
+
+    padding: 15px 18px;
+}
+
+.metal-production-page .metal-production-payment>div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.metal-production-page .metal-production-note {
+    padding: 15px 18px;
+
+    color: #4b5563;
+
+    font-size: 12px;
+    line-height: 1.6;
+
+    white-space: pre-wrap;
+}
+
+.metal-production-page .metal-production-empty-inline {
+    padding: 18px;
+
+    color: #9ca3af;
+
+    font-size: 12px;
+}
+
+.metal-production-page .metal-production-not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 240px;
+    padding: 35px;
+
+    text-align: center;
+}
+
+.metal-production-page .metal-production-not-found h1,
+.metal-production-page .metal-production-not-found h2 {
+    margin: 0;
+
+    color: var(--production-text);
+
+    font-size: 20px;
+}
+
+.metal-production-page .metal-production-not-found p {
+    margin: 0;
+
+    color: #9ca3af;
+
+    font-size: 12px;
+}
+
+/* =========================================================
+   LIST PAGE
+   ========================================================= */
+
+.metal-production-page .metal-production-order-list {
+    display: grid;
+}
+
+.metal-production-page .metal-production-order-card {
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 1fr) minmax(220px, 1.2fr) auto auto 24px;
+    align-items: center;
+    gap: 15px;
+
+    width: 100%;
+
+    padding: 14px 16px;
+
+    color: inherit;
+    background: #fff;
+
+    border-top: 1px solid var(--production-border);
+
+    text-decoration: none;
+
+    transition: background-color 0.15s ease;
+}
+
+.metal-production-page .metal-production-order-card:hover {
+    background: #fbfcff;
+}
+
+.metal-production-page .metal-production-order-main {
+    min-width: 0;
+}
+
+.metal-production-page .metal-production-order-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.metal-production-page .metal-production-order-heading>strong {
+    color: var(--production-text);
+
+    font-size: 13px;
+}
+
+.metal-production-page .metal-production-order-progress {
+    min-width: 0;
+}
+
+.metal-production-page .metal-production-progress-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+
+    margin-bottom: 5px;
+}
+
+.metal-production-page .metal-production-progress-top span {
+    color: #9ca3af;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-progress-top strong {
+    color: var(--production-text);
+
+    font-size: 10px;
+}
+
+.metal-production-page .metal-production-progress-track {
+    height: 6px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #edf0f4;
+}
+
+.metal-production-page .metal-production-progress-value {
+    height: 100%;
+
+    border-radius: inherit;
+
+    background: var(--production-blue);
+}
+
+.metal-production-page .metal-production-order-result {
+    min-width: max-content;
+}
+
+.metal-production-page .metal-production-order-result span {
+    display: block;
+
+    color: #9ca3af;
+
+    font-size: 9px;
+}
+
+.metal-production-page .metal-production-order-result strong {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--production-text);
+
+    font-size: 11px;
+}
+
+.metal-production-page .metal-production-order-card>svg {
+    color: #9ca3af;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+    .metal-production-page .metal-production-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .metal-production-page .metal-production-sidebar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metal-production-page .metal-production-sticky-card {
+        position: static;
+    }
+
+    .metal-production-page .metal-production-order-card {
+        grid-template-columns:
+            minmax(200px, 1fr) minmax(180px, 1fr) auto 24px;
+    }
+
+    .metal-production-page .metal-production-order-card>.metal-production-order-result:nth-of-type(2) {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .metal-production-page .metal-production-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metal-production-page .metal-production-material-specs {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metal-production-page .metal-production-facts {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .metal-production-page .metal-production-fact-primary {
+        grid-column: 1 / -1;
+    }
+
+    .metal-production-page .metal-production-selector-head {
+        flex-direction: column;
+    }
+
+    .metal-production-page .metal-production-selector-total {
+        width: 100%;
+        text-align: left;
+    }
+}
+
+@media (max-width: 680px) {
+    .metal-production-page .metal-production-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .metal-production-page .metal-production-summary-grid,
+    .metal-production-page .metal-production-sidebar,
+    .metal-production-page .metal-production-customer,
+    .metal-production-page .metal-production-selected-summary,
+    .metal-production-page .metal-production-auto-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .metal-production-page .metal-production-material-specs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metal-production-page .metal-production-requirement-header {
+        grid-template-columns: 28px minmax(0, 1fr) 24px;
+    }
+
+    .metal-production-page .metal-production-requirement-meters,
+    .metal-production-page .metal-production-selected-coil {
+        display: none;
+    }
+
+    .metal-production-page .metal-production-coil {
+        grid-template-columns: 25px minmax(0, 1fr);
+    }
+
+    .metal-production-page .metal-production-coil-metrics {
+        grid-column: 2;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+    }
+
+    .metal-production-page .metal-production-coil-metrics>div {
+        min-width: 70px;
+        text-align: left;
+    }
+
+    .metal-production-page .metal-production-facts {
+        grid-template-columns: 1fr;
+    }
+
+    .metal-production-page .metal-production-fact-primary {
+        grid-column: auto;
+    }
+
+    .metal-production-page .metal-production-complete-actions,
+    .metal-production-page .metal-production-start-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .metal-production-page .metal-production-complete-actions .admin-primary-button,
+    .metal-production-page .metal-production-start-bar .admin-primary-button {
+        width: 100%;
+    }
+
+    .metal-production-page .metal-production-order-card {
+        grid-template-columns: 1fr;
+    }
+}

@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 
 import styles from './ProductPage.module.css';
 import Link from 'next/link';
-import { AddToCartButton } from '@/components/AddToCartButton/AddToCartButton';
+import { ProductConfigurator } from '@/components/ProductConfigurator/ProductConfigurator';
 
 type Props = {
   params: Promise<{
@@ -84,16 +84,16 @@ export default async function ProductPage({
 
             <div className={styles.actions}>
 
-            <AddToCartButton
-            product={{
-                id: product.id,
-                title: product.title,
-                price:  Math.min(...product.variants.map((variant) => variant.price)),
-                image: product.image,
-                slug: product.slug,
-                unit: product.unit,
-            }}
-            />
+              <ProductConfigurator
+                product={{
+                  id: product.id,
+                  title: product.title,
+                  slug: product.slug,
+                  image: product.image,
+                  unit: product.unit,
+                  variants: product.variants,
+                }}
+              />
 
               <button className={styles.consultButton}>
                 Консультація
