@@ -570,17 +570,31 @@ export async function completeProduction({
     );
   }
 
-  const matchingProduct = production.order.items.find(
-    (item) =>
-      item.productId === production.productId &&
-      item.variantId === variantId
-  )?.product;
-
-  if (!matchingProduct) {
-    throw new Error('Не вдалося визначити товар для складського приходу');
+  if (!production.order) {
+    throw new Error(
+      'Виробництво не прив’язане до замовлення'
+    );
   }
 
-  const usefulWidth = toNumber(matchingProduct.usefulWidth);
+  const matchingProduct =
+    production.order.items.find(
+      (item) =>
+        item.productId ===
+          production.productId &&
+        item.variantId ===
+          variantId
+    )?.product;
+
+  if (!matchingProduct) {
+    throw new Error(
+      'Не вдалося визначити товар для складського приходу'
+    );
+  }
+
+  const usefulWidth =
+    toNumber(
+      matchingProduct.usefulWidth
+    );
 
   if (usefulWidth <= 0) {
     throw new Error('Для товару не задано коректну робочу ширину');

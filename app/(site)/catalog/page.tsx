@@ -27,7 +27,6 @@ type Props = {
 export default async function CatalogPage({
   searchParams,
 }: Props) {
-
   const params = await searchParams;
 
   const selectedCategory =
@@ -39,12 +38,15 @@ export default async function CatalogPage({
         selectedCategory &&
         selectedCategory !== 'Всі'
           ? {
-              category: selectedCategory,
+              category:
+                selectedCategory,
             }
           : undefined,
+
       include: {
-      variants: true,
-    },
+        variants: true,
+      },
+
       orderBy: {
         createdAt: 'desc',
       },
@@ -52,107 +54,176 @@ export default async function CatalogPage({
 
   return (
     <main className={styles.page}>
+      {/* FILTERS */}
 
-      {/* Filters */}
-      <section className={styles.filters}>
+      <section
+        className={styles.filters}
+      >
         <div className="container">
+          <div
+            className={
+              styles.filtersWrapper
+            }
+          >
+            {filters.map((item) => {
+              const isActive =
+                item === 'Всі'
+                  ? !selectedCategory
+                  : selectedCategory ===
+                    item;
 
-          <div className={styles.filtersWrapper}>
-            {filters.map((item) => (
-
-              <Link
-                key={item}
-                href={
-                  item === 'Всі'
-                    ? '/catalog'
-                    : `/catalog?category=${item}`
-                }
-                className={`${styles.filterButton} ${
-                  selectedCategory === item
-                    ? styles.active
-                    : ''
-                }`}
-              >
-                {item}
-              </Link>
-
-            ))}
+              return (
+                <Link
+                  key={item}
+                  href={
+                    item === 'Всі'
+                      ? '/catalog'
+                      : `/catalog?category=${item}`
+                  }
+                  className={`${styles.filterButton} ${
+                    isActive
+                      ? styles.active
+                      : ''
+                  }`}
+                >
+                  {item}
+                </Link>
+              );
+            })}
           </div>
-
         </div>
       </section>
 
-      {/* Products */}
-      <section className={styles.products}>
+      {/* PRODUCTS */}
+
+      <section
+        className={styles.products}
+      >
         <div className="container">
-
           <div className={styles.grid}>
-            {products.map((item) => (
+            {products.map((item) => {
+              /*
+               * Prisma Decimal -> number
+               *
+               * Ціна зберігається як Decimal,
+               * тому перед Math.min()
+               * перетворюємо її у number.
+               */
 
-              <article
-                key={item.id}
-                className={styles.card}
-              >
-                <div className={styles.imageWrapper}>
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    width={600}
-                    height={400}
-                    className={styles.image}
-                  />
-                </div>
+              const prices =
+                item.variants.map(
+                  (variant) =>
+                    Number(
+                      variant.price
+                    )
+                );
 
-                <div className={styles.content}>
-                  <span className={styles.category}>
-                    {item.category}
-                  </span>
+              const minPrice =
+                prices.length > 0
+                  ? Math.min(...prices)
+                  : null;
 
-                  <h2 className={styles.productTitle}>
-                    {item.title}
-                  </h2>
+              return (
+                <article
+                  key={item.id}
+                  className={
+                    styles.card
+                  }
+                >
+                  {/* IMAGE */}
 
-                  <p className={styles.price}>
-                    від {Math.min(
-                      ...item.variants.map(
-                        (variant) => variant.price
-                      )
-                    )} грн/{item.unit}
-                  </p>
-                  <div className={styles.cardActions}>
-
-                    <Link
-                      href={`/catalog/${item.slug}`}
-                      className={styles.detailsButton}
-                    >
-                      Детальніше
-                    </Link>
-
-                    <AddToCartButton
-                      product={{
-                        id: item.id,
-                        title: item.title,
-
-                        price: Math.min(
-                          ...item.variants.map(
-                            (variant) => variant.price
-                          )
-                        ),
-
-                        image: item.image,
-                        slug: item.slug,
-                        unit: item.unit,
-                      }}
+                  <div
+                    className={
+                      styles.imageWrapper
+                    }
+                  >
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      width={600}
+                      height={400}
+                      className={
+                        styles.image
+                      }
                     />
-
                   </div>
-                </div>
 
-              </article>
+                  {/* CONTENT */}
 
-            ))}
+                  <div
+                    className={
+                      styles.content
+                    }
+                  >
+                    <span
+                      className={
+                        styles.category
+                      }
+                    >
+                      {item.category}
+                    </span>
+
+                    <h2
+                      className={
+                        styles.productTitle
+                      }
+                    >
+                      {item.title}
+                    </h2>
+
+                    <p
+                      className={
+                        styles.price
+                      }
+                    >
+                      {minPrice !== null
+                        ? `від ${minPrice} грн/${item.unit}`
+                        : 'Ціну уточнюйте'}
+                    </p>
+
+                    <div
+                      className={
+                        styles.cardActions
+                      }
+                    >
+                      <Link
+                        href={`/catalog/${item.slug}`}
+                        className={
+                          styles.detailsButton
+                        }
+                      >
+                        Детальніше
+                      </Link>
+
+                      {minPrice !==
+                        null && (
+                        <AddToCartButton
+                          product={{
+                            id: item.id,
+
+                            title:
+                              item.title,
+
+                            price:
+                              minPrice,
+
+                            image:
+                              item.image,
+
+                            slug:
+                              item.slug,
+
+                            unit:
+                              item.unit,
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
-
         </div>
       </section>
     </main>

@@ -1,14 +1,23 @@
 'use client';
 
-import { Product }
-from '@prisma/client';
+import type { CalculatorProduct } from './CalculatorTabs';
 
 type Props = {
-  products: Product[];
+  products: CalculatorProduct[];
 };
 
 export const ShtaketCalculator = ({
   products,
 }: Props) => {
-  return <div>Shtaket Calculator</div>;
+  return (
+    <div>
+      Shtaket Calculator
+
+      {products.length > 0 && (
+        <div>
+          Доступно товарів: {products.length}
+        </div>
+      )}
+    </div>
+  );
 };

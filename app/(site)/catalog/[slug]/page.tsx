@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 import { prisma } from '@/lib/prisma';
 
 import styles from './ProductPage.module.css';
-import Link from 'next/link';
+
 import { ProductConfigurator } from '@/components/ProductConfigurator/ProductConfigurator';
 
 type Props = {
@@ -16,7 +17,6 @@ type Props = {
 export default async function ProductPage({
   params,
 }: Props) {
-
   const { slug } = await params;
 
   const product =
@@ -24,31 +24,99 @@ export default async function ProductPage({
       where: {
         slug,
       },
-       include: {
-      variants: true,
-    },
+
+      include: {
+        variants: true,
+      },
     });
 
   if (!product) {
     notFound();
   }
 
+  /*
+   * Prisma Decimal -> number
+   *
+   * ProductVariant:
+   * - thickness: Decimal
+   * - price: Decimal
+   *
+   * ProductConfigurator очікує number.
+   */
+
+  const normalizedVariants =
+    product.variants.map(
+      (variant) => ({
+        id: variant.id,
+        productId:
+          variant.productId,
+
+        color:
+          variant.color,
+
+        thickness:
+          Number(
+            variant.thickness
+          ),
+
+        coating:
+          variant.coating,
+
+        paintingType:
+          variant.paintingType,
+
+        metalBrand:
+          variant.metalBrand,
+
+        zincContent:
+          Number(
+            variant.zincContent
+          ),
+
+        price:
+          Number(
+            variant.price
+          ),
+
+        inStock:
+          variant.inStock,
+
+        createdAt:
+          variant.createdAt,
+
+        updatedAt:
+          variant.updatedAt,
+      })
+    );
+
+  const minPrice =
+    normalizedVariants.length > 0
+      ? Math.min(
+          ...normalizedVariants.map(
+            (variant) =>
+              variant.price
+          )
+        )
+      : null;
+
   return (
     <main className={styles.page}>
+      <div className="container">
+        <Link
+          href="/catalog"
+          className={styles.backButton}
+        >
+          ← Назад до каталогу
+        </Link>
 
-          <div className="container">
-              
-            <Link
-                href="/catalog"
-                className={styles.backButton}
-            >
-                ← Назад до каталогу
-              </Link>
-              
         <div className={styles.wrapper}>
+          {/* IMAGE */}
 
-          {/* Image */}
-          <div className={styles.imageWrapper}>
+          <div
+            className={
+              styles.imageWrapper
+            }
+          >
             <Image
               src={product.image}
               alt={product.title}
@@ -59,54 +127,82 @@ export default async function ProductPage({
             />
           </div>
 
-          {/* Content */}
-          <div className={styles.content}>
+          {/* CONTENT */}
 
-            <span className={styles.category}>
+          <div className={styles.content}>
+            <span
+              className={
+                styles.category
+              }
+            >
               {product.category}
             </span>
 
-            <h1 className={styles.title}>
+            <h1
+              className={styles.title}
+            >
               {product.title}
             </h1>
 
-            <p className={styles.price}>
-              від {Math.min(
-                ...product.variants.map(
-                  (variant) => variant.price
-                )
-              )} грн/{product.unit}
-            </p>
+            {minPrice !== null && (
+              <p
+                className={
+                  styles.price
+                }
+              >
+                від {minPrice} грн/
+                {product.unit}
+              </p>
+            )}
 
-            <p className={styles.description}>
-              {product.description}
-            </p>
+            {product.description && (
+              <p
+                className={
+                  styles.description
+                }
+              >
+                {product.description}
+              </p>
+            )}
 
-            <div className={styles.actions}>
-
+            <div
+              className={
+                styles.actions
+              }
+            >
               <ProductConfigurator
                 product={{
                   id: product.id,
-                  title: product.title,
-                  slug: product.slug,
-                  image: product.image,
-                  unit: product.unit,
-                  variants: product.variants,
+
+                  title:
+                    product.title,
+
+                  slug:
+                    product.slug,
+
+                  image:
+                    product.image,
+
+                  unit:
+                    product.unit,
+
+                  variants:
+                    normalizedVariants,
                 }}
               />
 
-              <button className={styles.consultButton}>
+              <button
+                type="button"
+                className={
+                  styles.consultButton
+                }
+              >
                 Консультація
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </main>
   );
 }
