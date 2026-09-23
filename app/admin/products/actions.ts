@@ -4,11 +4,13 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
+import { requireRole } from '@/lib/auth';
 
 export async function createProductVariant(
   productId: string,
   formData: FormData
 ) {
+  await requireRole('ADMIN', 'MANAGER');
   const thickness = Number(
     formData.get('thickness')
   );
@@ -71,6 +73,7 @@ export async function updateProductVariant(
   variantId: string,
   formData: FormData
 ) {
+  await requireRole('ADMIN', 'MANAGER');
   const thickness = Number(
     formData.get('thickness')
   );
@@ -128,6 +131,7 @@ export async function deleteProductVariant(
   productId: string,
   variantId: string
 ) {
+  await requireRole('ADMIN', 'MANAGER');
   await prisma.productVariant.delete({
     where: {
       id: variantId,

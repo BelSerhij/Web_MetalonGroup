@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
+import { requireRole } from '@/lib/auth';
 
 const STEEL_DENSITY = 7850;
 
@@ -110,6 +111,7 @@ function calculateKgPerMeter(
 export async function createMetalCoil(
   formData: FormData
 ) {
+  await requireRole('ADMIN', 'WAREHOUSE');
   const code =
     getRequiredString(
       formData,
@@ -409,6 +411,7 @@ export async function createProduction(
   coilId: string,
   formData: FormData
 ) {
+  await requireRole('ADMIN', 'PRODUCTION');
   const productId =
     getRequiredString(
       formData,
@@ -797,6 +800,7 @@ export async function startProduction({
   orderId,
   coilAssignments,
 }: StartProductionData) {
+  await requireRole('ADMIN', 'PRODUCTION');
   if (
     !orderId ||
     coilAssignments.length ===
@@ -1296,6 +1300,7 @@ export async function completeProduction({
   producedSheets,
   wasteSheets,
 }: CompleteProductionData) {
+  await requireRole('ADMIN', 'PRODUCTION');
   if (
     !Number.isFinite(
       usedLength

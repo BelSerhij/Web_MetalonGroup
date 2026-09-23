@@ -276,7 +276,7 @@ export default async function OrderPage({
           <div className="admin-product-details">
             <div>
               <span>
-                Ім'я
+                Ім&apos;я
               </span>
 
               <strong>

@@ -71,7 +71,7 @@ export default function OrderForm({
   const [sheetItems, setSheetItems] =
     useState<SheetItem[]>([
       {
-        id: Date.now(),
+        id: 1,
         quantity: 1,
         length: '',
       },
@@ -147,11 +147,7 @@ export default function OrderForm({
       (currentItems) => [
         ...currentItems,
         {
-          id:
-            Date.now() +
-            Math.floor(
-              Math.random() * 1000
-            ),
+          id: Math.max(...currentItems.map((item) => item.id)) + 1,
           quantity: 1,
           length: '',
         },
@@ -480,7 +476,7 @@ export default function OrderForm({
 
         <div className="admin-order-sheets">
           {sheetItems.map(
-            (item, index) => {
+            (item) => {
               const itemLength =
                 Number(item.quantity || 0) *
                 Number(item.length || 0);

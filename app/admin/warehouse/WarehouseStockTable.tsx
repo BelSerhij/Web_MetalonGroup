@@ -99,7 +99,7 @@ export default function WarehouseStockTable({ stock, warehouses }: { stock: Stoc
         <p>{adjustment.color} · {adjustment.thickness} мм · {adjustment.coating}</p>
         <div className="modal-current-stock">Поточний залишок <strong>{format(adjustment.quantity)} {adjustment.unit || 'м.п.'}</strong></div>
         <label>Зміна залишку, {adjustment.unit || 'м.п.'}<input name="quantity" type="number" step="0.01" placeholder="+10 або -10" autoFocus /></label>
-        {warehouses.length > 0 && <label>Склад<select name="warehouseId"><option value="">Без прив'язки</option>{warehouses.map((w) => <option value={w.id} key={w.id}>{w.name}</option>)}</select></label>}
+        {warehouses.length > 0 && <label>Склад<select name="warehouseId"><option value="">Без прив&apos;язки</option>{warehouses.map((w) => <option value={w.id} key={w.id}>{w.name}</option>)}</select></label>}
         <label>Примітка<textarea name="note" rows={3} placeholder="Причина коригування..." /></label>
         {error && <div className="warehouse-form-error">{error}</div>}
         <button disabled={pending} className="warehouse-primary-button" type="submit">{pending ? 'Збереження...' : 'Зберегти коригування'}</button>

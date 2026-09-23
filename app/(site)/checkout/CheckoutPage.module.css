@@ -46,6 +46,11 @@
     font-weight: 700;
 }
 
+.error {
+    color: #b42318;
+    margin: 0;
+}
+
 .summary {
     position: sticky;
     top: 120px;

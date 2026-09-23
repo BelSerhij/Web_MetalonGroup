@@ -1,8 +1,13 @@
 import { PrismaClient, UserRole } from '@prisma/client';
+import { hashPassword } from '../lib/password';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD;
+  if (!initialAdminPassword || initialAdminPassword.length < 12) {
+    throw new Error('Set INITIAL_ADMIN_PASSWORD to a unique password of at least 12 characters before seeding');
+  }
   console.log('🌱 Seeding database...');
 
   // ============================================
@@ -37,7 +42,7 @@ async function main() {
     data: {
       name: 'Адміністратор',
       email: 'admin@metalon.ua',
-      passwordHash: 'CHANGE_THIS_PASSWORD_HASH',
+      passwordHash: await hashPassword(initialAdminPassword),
       role: UserRole.ADMIN,
       isActive: true,
     },

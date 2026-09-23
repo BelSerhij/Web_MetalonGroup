@@ -110,8 +110,13 @@ export default async function CatalogPage({
                * перетворюємо її у number.
                */
 
+              const availableVariants =
+                item.variants.filter(
+                  (variant) => variant.inStock
+                );
+
               const prices =
-                item.variants.map(
+                availableVariants.map(
                   (variant) =>
                     Number(
                       variant.price
@@ -122,6 +127,12 @@ export default async function CatalogPage({
                 prices.length > 0
                   ? Math.min(...prices)
                   : null;
+
+              const defaultVariant =
+                availableVariants.find(
+                  (variant) =>
+                    Number(variant.price) === minPrice
+                );
 
               return (
                 <article
@@ -195,14 +206,14 @@ export default async function CatalogPage({
                         Детальніше
                       </Link>
 
-                      {minPrice !==
-                        null && (
+                      {minPrice !== null &&
+                        defaultVariant && (
                         <AddToCartButton
                           product={{
-                            id: item.id,
+                            id: defaultVariant.id,
 
                             title:
-                              item.title,
+                              `${item.title} — ${defaultVariant.color}, ${defaultVariant.thickness} мм, ${defaultVariant.metalBrand}`,
 
                             price:
                               minPrice,

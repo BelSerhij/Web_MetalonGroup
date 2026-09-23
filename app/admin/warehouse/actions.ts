@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { requireRole } from '@/lib/auth';
 
 export async function adjustWarehouseStock({
   productId,
@@ -16,6 +17,7 @@ export async function adjustWarehouseStock({
   quantity: number;
   note?: string;
 }) {
+  await requireRole('ADMIN', 'WAREHOUSE');
   if (!Number.isFinite(quantity) || quantity === 0) {
     throw new Error('Кількість повинна бути ненульовим числом');
   }

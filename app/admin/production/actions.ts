@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
+import { requireRole } from '@/lib/auth';
 
 const STEEL_DENSITY = 7850;
 
@@ -84,6 +85,7 @@ export async function startProduction({
   orderId,
   coilAssignments,
 }: StartProductionData) {
+  await requireRole('ADMIN', 'PRODUCTION');
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: {
@@ -425,6 +427,7 @@ export async function completeProduction({
   producedSheets,
   wasteSheets,
 }: CompleteProductionData) {
+  await requireRole('ADMIN', 'PRODUCTION');
   if (
     !Number.isFinite(usedLength) ||
     !Number.isFinite(producedSheets) ||

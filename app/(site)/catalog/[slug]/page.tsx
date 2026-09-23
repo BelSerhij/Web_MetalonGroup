@@ -186,6 +186,9 @@ export default async function ProductPage({
                   unit:
                     product.unit,
 
+                  usefulWidth:
+                    Number(product.usefulWidth),
+
                   variants:
                     normalizedVariants,
                 }}

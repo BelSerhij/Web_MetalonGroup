@@ -7,10 +7,12 @@ import {
 import {
   redirect,
 } from 'next/navigation';
+import { randomUUID } from 'node:crypto';
 
 import {
   prisma,
 } from '@/lib/prisma';
+import { requireRole } from '@/lib/auth';
 
 type OrderItemInput = {
   productId: string;
@@ -37,10 +39,20 @@ type CreateOrderData = {
 export async function createOrder(
   data: CreateOrderData
 ) {
+  await requireRole('ADMIN', 'MANAGER');
   if (!data.items.length) {
     throw new Error(
       'Додайте хоча б одну позицію'
     );
+  }
+
+  const variantIds = [...new Set(data.items.map((item) => item.variantId))];
+  const variants = await prisma.productVariant.findMany({
+    where: { id: { in: variantIds } },
+    select: { id: true, productId: true, price: true },
+  });
+  if (variants.length !== variantIds.length) {
+    throw new Error('Один або декілька варіантів товару не знайдено');
   }
 
   let totalAmount = 0;
@@ -58,6 +70,8 @@ export async function createOrder(
         }
 
         if (
+          !Number.isFinite(item.quantity) ||
+          !Number.isFinite(item.length) ||
           item.quantity <= 0 ||
           item.length <= 0
         ) {
@@ -66,13 +80,18 @@ export async function createOrder(
           );
         }
 
+        const variant = variants.find((entry) => entry.id === item.variantId);
+        if (!variant || variant.productId !== item.productId) {
+          throw new Error('Варіант не відповідає вибраному товару');
+        }
+
         const totalMeters =
           item.quantity *
           item.length;
 
         const itemTotal =
           totalMeters *
-          item.price;
+          Number(variant.price);
 
         totalAmount +=
           itemTotal;
@@ -93,8 +112,7 @@ export async function createOrder(
           width:
             item.width ?? null,
 
-          price:
-            item.price,
+          price: variant.price,
 
           total:
             itemTotal,
@@ -106,13 +124,7 @@ export async function createOrder(
       }
     );
 
-  const ordersCount =
-    await prisma.order.count();
-
-  const orderNumber =
-    `ORD-${String(
-      ordersCount + 1
-    ).padStart(5, '0')}`;
+  const orderNumber = `ORD-${randomUUID().slice(0, 8).toUpperCase()}`;
 
   const order =
     await prisma.order.create({
@@ -153,6 +165,7 @@ export async function createOrder(
 export async function confirmOrder(
   orderId: string
 ) {
+  await requireRole('ADMIN', 'MANAGER');
   const order =
     await prisma.order.findUnique({
       where: {
@@ -202,6 +215,7 @@ export async function confirmOrder(
 export async function sendOrderToProduction(
   orderId: string
 ) {
+  await requireRole('ADMIN', 'MANAGER');
   const order =
     await prisma.order.findUnique({
       where: {

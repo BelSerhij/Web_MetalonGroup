@@ -1,6 +1,9 @@
 import { Bell, Search, User } from 'lucide-react';
+import { logout } from '@/app/login/actions';
 
-export default function AdminHeader() {
+type Props = { user: { name: string; role: string } };
+
+export default function AdminHeader({ user }: Props) {
   return (
     <header className="admin-header">
       <div className="admin-header-search">
@@ -23,9 +26,10 @@ export default function AdminHeader() {
           </div>
 
           <div>
-            <p>Адміністратор</p>
-            <span>ADMIN</span>
+            <p>{user.name}</p>
+            <span>{user.role}</span>
           </div>
+          <form action={logout}><button type="submit" className="admin-icon-button" aria-label="Вийти">Вийти</button></form>
         </div>
       </div>
     </header>

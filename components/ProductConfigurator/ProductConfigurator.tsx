@@ -60,6 +60,7 @@ type Product = {
   slug: string;
   image: string;
   unit: string;
+  usefulWidth: number;
   variants: Variant[];
 };
 
@@ -104,7 +105,8 @@ export const ProductConfigurator = ({
       firstAvailableVariant?.metalBrand ?? ''
     );
 
-  const [quantity, setQuantity] = useState(1);
+  const [sheetCount, setSheetCount] = useState(1);
+  const [sheetLength, setSheetLength] = useState(1);
 
   /*
    * Отримуємо всі кольори,
@@ -266,10 +268,11 @@ export const ProductConfigurator = ({
    * Загальна ціна.
    */
 
-  const totalPrice =
-    selectedVariant
-      ? selectedVariant.price * quantity
-      : 0;
+  const totalMeters = sheetCount * sheetLength;
+  const totalArea = totalMeters * product.usefulWidth;
+  const totalPrice = selectedVariant
+    ? selectedVariant.price * (product.unit === 'м²' ? totalArea : totalMeters)
+    : 0;
 
   /*
    * Зміна кольору.
@@ -374,6 +377,7 @@ export const ProductConfigurator = ({
 
     addToCart({
       id: selectedVariant.id,
+      cartId: `${selectedVariant.id}:${sheetLength}`,
 
       title:
         `${product.title} — ` +
@@ -388,6 +392,12 @@ export const ProductConfigurator = ({
       slug: product.slug,
 
       unit: product.unit,
+
+      quantity: sheetCount,
+      length: sheetLength,
+      meters: totalMeters,
+      area: totalArea,
+      total: totalPrice,
     });
   };
 
@@ -722,7 +732,7 @@ export const ProductConfigurator = ({
 
       <div className={styles.group}>
         <span className={styles.label}>
-          Кількість
+          Кількість листів
         </span>
 
         <div
@@ -741,7 +751,7 @@ export const ProductConfigurator = ({
                 styles.quantityButton
               }
               onClick={() =>
-                setQuantity((prev) =>
+                setSheetCount((prev) =>
                   Math.max(
                     1,
                     prev - 1
@@ -752,13 +762,21 @@ export const ProductConfigurator = ({
               −
             </button>
 
-            <span
+            <input
+              type="number"
+              min="1"
+              step="1"
+              inputMode="numeric"
               className={
                 styles.quantityValue
               }
-            >
-              {quantity}
-            </span>
+              value={sheetCount}
+              onChange={(event) => {
+                const value = Number(event.target.value);
+                setSheetCount(Number.isInteger(value) && value > 0 ? value : 1);
+              }}
+              aria-label="Кількість листів"
+            />
 
             <button
               type="button"
@@ -766,7 +784,7 @@ export const ProductConfigurator = ({
                 styles.quantityButton
               }
               onClick={() =>
-                setQuantity(
+                setSheetCount(
                   (prev) => prev + 1
                 )
               }
@@ -776,9 +794,18 @@ export const ProductConfigurator = ({
           </div>
 
           <span>
-            {product.unit}
+            шт.
           </span>
         </div>
+      </div>
+
+      <div className={styles.group}>
+        <label className={styles.label} htmlFor="sheet-length">Висота листа, м</label>
+        <input id="sheet-length" className={styles.lengthInput} type="number" min="0.1" step="0.01" value={sheetLength} onChange={(event) => {
+          const value = Number(event.target.value);
+          setSheetLength(Number.isFinite(value) && value > 0 ? value : 0.1);
+        }} />
+        <span className={styles.calculation}>Разом: {totalMeters.toFixed(2)} м.п. · {totalArea.toFixed(2)} м²</span>
       </div>
 
       {/* =========================

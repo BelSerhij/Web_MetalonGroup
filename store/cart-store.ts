@@ -3,16 +3,20 @@ import { persist } from 'zustand/middleware';
 
 type Product = {
   id: string;
+  cartId: string;
   title: string;
   price: number;
   image: string;
   slug: string;
   unit: string;
+  quantity: number;
+  length: number;
+  meters: number;
+  area: number;
+  total: number;
 };
 
-type CartItem = Product & {
-  quantity: number;
-};
+type CartItem = Product;
 
 type CartStore = {
   items: CartItem[];
@@ -47,10 +51,13 @@ export const useCartStore =
     increaseQuantity: (id) =>
   set((state) => ({
     items: state.items.map((item) =>
-      item.id === id
+      item.cartId === id
         ? {
             ...item,
             quantity: item.quantity + 1,
+            meters: item.meters + item.meters / item.quantity,
+            area: item.area + item.area / item.quantity,
+            total: item.total + item.total / item.quantity,
           }
         : item
     ),
@@ -60,10 +67,13 @@ export const useCartStore =
   set((state) => ({
     items: state.items
       .map((item) =>
-        item.id === id
-          ? {
+          item.cartId === id
+            ? {
               ...item,
               quantity: item.quantity - 1,
+              meters: item.meters - item.meters / item.quantity,
+              area: item.area - item.area / item.quantity,
+              total: item.total - item.total / item.quantity,
             }
           : item
       )
@@ -74,17 +84,20 @@ export const useCartStore =
       set((state) => {
         const existingItem =
           state.items.find(
-            (item) => item.id === product.id
+            (item) => item.cartId === product.cartId
           );
 
         if (existingItem) {
             return {
               isOpen: true,
             items: state.items.map((item) =>
-              item.id === product.id
+              item.cartId === product.cartId
                 ? {
                     ...item,
-                    quantity: item.quantity + 1,
+                    quantity: item.quantity + product.quantity,
+                    meters: item.meters + product.meters,
+                    area: item.area + product.area,
+                    total: item.total + product.total,
                   }
                 : item
             ),
@@ -95,10 +108,7 @@ export const useCartStore =
             isOpen: true,
           items: [
             ...state.items,
-            {
-              ...product,
-              quantity: 1,
-            },
+            product,
           ],
         };
       }),
@@ -106,7 +116,7 @@ export const useCartStore =
     removeFromCart: (id) =>
       set((state) => ({
         items: state.items.filter(
-          (item) => item.id !== id
+          (item) => item.cartId !== id
         ),
       })),
 
@@ -117,7 +127,9 @@ export const useCartStore =
 
       }),
       {
-        name: 'cart-storage-v2',
+        // v3 stores ProductVariant IDs. v2 stored Product IDs from catalog quick-add,
+        // which cannot be safely used to create an order.
+        name: 'cart-storage-v4',
       }
     )
   );
