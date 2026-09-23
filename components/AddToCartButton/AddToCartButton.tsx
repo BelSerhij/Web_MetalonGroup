@@ -17,14 +17,36 @@ type Props = {
 export const AddToCartButton = ({
   product,
 }: Props) => {
+  const addToCart = useCartStore(
+    (state) => state.addToCart
+  );
 
-  const addToCart =
-    useCartStore((state) => state.addToCart);
+  const handleAddToCart = () => {
+    const quantity = 1;
+    const length = 1;
+    const meters = quantity * length;
+
+    addToCart({
+      id: product.id,
+      cartId: `${product.id}:${length}`,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      slug: product.slug,
+      unit: product.unit,
+      quantity,
+      length,
+      meters,
+      area: 0,
+      total: product.price,
+    });
+  };
 
   return (
     <button
-          onClick={() => addToCart(product)}
-          className={styles.button}
+      type="button"
+      onClick={handleAddToCart}
+      className={styles.button}
     >
       В кошик
     </button>
