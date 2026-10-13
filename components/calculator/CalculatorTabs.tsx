@@ -85,6 +85,10 @@ type CalculatorType =
   (typeof calculatorTypes)[number];
 
 type Props = {
+  initialType?: CalculatorType;
+  initialLength?: string;
+  initialWidth?: string;
+  initialPlanes?: string;
   profnastylProducts: CalculatorProduct[];
   shtaketProducts: CalculatorProduct[];
   metalTileProducts: CalculatorProduct[];
@@ -95,6 +99,10 @@ type Props = {
 };
 
 export const CalculatorTabs = ({
+  initialType = 'Паркан',
+  initialLength = '',
+  initialWidth = '',
+  initialPlanes = '2',
   profnastylProducts,
   shtaketProducts,
   metalTileProducts,
@@ -103,7 +111,7 @@ export const CalculatorTabs = ({
   screws,
 }: Props) => {
   const [activeType, setActiveType] =
-    useState<CalculatorType>('Паркан');
+    useState<CalculatorType>(initialType);
 
   return (
     <main className={styles.page}>
@@ -141,15 +149,17 @@ export const CalculatorTabs = ({
               posts={posts}
               lags={lags}
               screws={screws}
+              initialLength={initialLength}
+              initialHeight={initialWidth}
             />
           )}
 
           {activeType === 'Фасад' && (
-            <FacadeCalculator />
+            <FacadeCalculator initialLength={initialLength} initialHeight={initialWidth} />
           )}
 
           {activeType === 'Дах' && (
-            <RoofCalculator />
+            <RoofCalculator products={profnastylProducts} initialLength={initialLength} initialWidth={initialWidth} initialPlanes={initialPlanes} />
           )}
 
           {activeType ===

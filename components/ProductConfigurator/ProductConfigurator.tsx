@@ -1,852 +1,161 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-
+import { useEffect, useMemo, useState } from 'react';
 import { useCartStore } from '@/store/cart-store';
-
+import { useProductColor } from '@/components/catalog/ProductColorContext';
+import { CATALOG_COLORS, findCatalogColor } from '@/lib/catalog/colors';
 import styles from './ProductConfigurator.module.css';
 
-const RAL_COLORS: Record<string, string> = {
-  'RAL 1014': '#ddc88f',
-  'RAL 3005': '#5e2129',
-  'RAL 3011': '#9b111e',
-  'RAL 5005': '#005387',
-  'RAL 6005': '#114232',
-  'RAL 7016': '#383e42',
-  'RAL 7024': '#4c5356',
-  'RAL 8004': '#8b4513',
-  'RAL 8017': '#442f29',
-  'RAL 8019': '#3d3735',
-  'RAL 9002': '#e6e1d9',
-  'RAL 9003': '#f4f4f0',
-  'RAL 9010': '#ffffff',
-
-  Цинк: '#b5b5b5',
-};
-
-const RAL_NAMES: Record<string, string> = {
-  'RAL 1014': 'Слонова кістка',
-  'RAL 3005': 'Вишневий',
-  'RAL 3011': 'Червоний',
-  'RAL 5005': 'Синій',
-  'RAL 6005': 'Зелений мох',
-  'RAL 7016': 'Антрацит',
-  'RAL 7024': 'Графіт',
-  'RAL 8004': 'Мідний',
-  'RAL 8017': 'Шоколад',
-  'RAL 8019': 'Темно-коричневий',
-  'RAL 9002': 'Світло-сірий',
-  'RAL 9003': 'Сигнальний білий',
-  'RAL 9010': 'Білий',
-
-  Цинк: 'Оцинкований',
-};
-
 type Variant = {
-  id: string;
-  thickness: number;
-  color: string;
-  coating: string;
-  paintingType: string;
-  metalBrand: string;
-  zincContent: number;
-  price: number;
-  inStock: boolean;
+  id: string; thickness: number; color: string; coating: string; paintingType: string;
+  metalBrand: string; zincContent: number; price: number;
 };
-
 type Product = {
-  id: string;
-  title: string;
-  slug: string;
-  image: string;
-  unit: string;
-  usefulWidth: number;
-  variants: Variant[];
+  id: string; title: string; slug: string; image: string; unit: string;
+  category: string; usefulWidth: number; fullWidth?: number; variants: Variant[]; manualUnitPrice?: number | null;
+  availableMetalBrands?: string[]; availableThicknesses?: number[];
+  catalogPrices?: Array<{ metalBrand: string; thickness: number; coating: string; paintingType: string; price: number }>;
 };
+type InitialSelection = { color?: string; thickness?: number; metalBrand?: string; coating?: string; paintingType?: string };
 
-type Props = {
-  product: Product;
-};
+const DEFAULT_THICKNESSES = [0.4, 0.45, 0.5, 0.6];
+const PAINTING_TYPES = [
+  { value: 'OneSide', label: 'Одностороннє' },
+  { value: 'TwoSide', label: 'Двостороннє' },
+];
+const FINISHES = [
+  { value: 'Gloss', label: 'Глянець · РЕ' },
+  { value: 'Matt', label: 'Матове · РЕМА' },
+  { value: 'PEME', label: 'PEME' },
+];
 
-export const ProductConfigurator = ({
-  product,
-}: Props) => {
-  const addToCart = useCartStore(
-    (state) => state.addToCart
-  );
+function finishKey(value: string) {
+  const normalized = value.toLocaleLowerCase('uk-UA');
+  if (/peme/.test(normalized)) return 'PEME';
+  if (/matt|matte|мат|рема|pema/.test(normalized)) return 'Matt';
+  if (/gloss|глян|\bpe\b|\bре\b/.test(normalized)) return 'Gloss';
+  return value;
+}
 
+export function ProductConfigurator({ product, initialSelection }: { product: Product; initialSelection?: InitialSelection }) {
+  const addToCart = useCartStore((state) => state.addToCart);
+  const { setColor: setPreviewColor } = useProductColor();
   const variants = product.variants;
+  const initial = variants[0];
+  const defaultPrice = product.catalogPrices?.[0];
+  const initialColor = findCatalogColor(initial?.color ?? '')?.code ?? initial?.color ?? 'RAL 3005';
+  const initialFinish = defaultPrice ? finishKey(defaultPrice.coating) : initial ? finishKey(initial.coating) : 'Gloss';
+  const initialColorFinish = findCatalogColor(initialColor)?.finishes.includes(initialFinish as 'Gloss' | 'Matt')
+    ? initialFinish
+    : findCatalogColor(initialColor)?.finishes[0] ?? 'Gloss';
+  const [selectedColor, setSelectedColor] = useState(initialSelection?.color ?? initialColor);
+  const [paintingType, setPaintingType] = useState(initialSelection?.paintingType ?? defaultPrice?.paintingType ?? initial?.paintingType ?? 'OneSide');
+  const [coating, setCoating] = useState(initialSelection?.coating ?? defaultPrice?.coating ?? initialColorFinish);
+  const [selectedThickness, setSelectedThickness] = useState(initialSelection?.thickness ?? defaultPrice?.thickness ?? initial?.thickness ?? DEFAULT_THICKNESSES[1]);
+  const defaultBrand = product.availableMetalBrands?.includes(initial?.metalBrand ?? '') ? initial?.metalBrand : defaultPrice?.metalBrand ?? product.availableMetalBrands?.[0] ?? initial?.metalBrand ?? '';
+  const [selectedMetalBrand, setSelectedMetalBrand] = useState(initialSelection?.metalBrand ?? defaultBrand);
+  useEffect(() => setPreviewColor(selectedColor), [selectedColor, setPreviewColor]);
+  const [sheetRows, setSheetRows] = useState([{ id: 1, count: 1, length: 1 }]);
+  const [nextSheetId, setNextSheetId] = useState(2);
 
-  /*
-   * Перший доступний варіант.
-   *
-   * Спочатку шукаємо товар в наявності.
-   * Якщо нічого немає в наявності —
-   * беремо перший доступний variant.
-   */
+  const thicknesses = useMemo(() => product.availableThicknesses?.length ? [...new Set(product.availableThicknesses)].sort((a, b) => a - b) : [...new Set(variants.map((v) => v.thickness))].sort((a, b) => a - b), [variants, product.availableThicknesses]);
+  const metalBrands = useMemo(() => product.availableMetalBrands?.length ? [...new Set(product.availableMetalBrands)].sort((a, b) => a.localeCompare(b, 'uk')) : [...new Set(variants.map((v) => v.metalBrand))].sort((a, b) => a.localeCompare(b, 'uk')), [variants, product.availableMetalBrands]);
+  const availableThicknesses = thicknesses.length ? thicknesses : DEFAULT_THICKNESSES;
+  const colors = CATALOG_COLORS;
+  const selectedVariant = variants.find((variant) => {
+    const colorMatches = variant.color === selectedColor || findCatalogColor(variant.color)?.code === selectedColor;
+    const finishMatches = finishKey(variant.coating) === coating;
+    return colorMatches && finishMatches && variant.paintingType === paintingType
+      && variant.thickness === selectedThickness && variant.metalBrand === selectedMetalBrand;
+  });
+  const catalogPrice = product.catalogPrices?.find((item) => item.metalBrand === selectedMetalBrand
+    && item.thickness === selectedThickness && finishKey(item.coating) === coating && item.paintingType === paintingType)?.price;
 
-  const firstAvailableVariant =
-    variants.find(
-      (variant) => variant.inStock
-    ) ?? variants[0];
-
-  const [selectedColor, setSelectedColor] =
-    useState(
-      firstAvailableVariant?.color ?? ''
-    );
-
-  const [selectedThickness, setSelectedThickness] =
-    useState(
-      firstAvailableVariant?.thickness ?? 0
-    );
-
-  const [selectedMetalBrand, setSelectedMetalBrand] =
-    useState(
-      firstAvailableVariant?.metalBrand ?? ''
-    );
-
-  const [sheetCount, setSheetCount] = useState(1);
-  const [sheetLength, setSheetLength] = useState(1);
-
-  /*
-   * Отримуємо всі кольори,
-   * які реально існують у базі.
-   *
-   * Спочатку:
-   * - кольори в наявності
-   *
-   * Потім:
-   * - кольори під замовлення
-   */
-
-  const colors = useMemo(() => {
-    const uniqueColors = [
-      ...new Set(
-        variants.map(
-          (variant) => variant.color
-        )
-      ),
-    ];
-
-    const availableColors =
-      uniqueColors.filter(
-        (color) =>
-          variants.some(
-            (variant) =>
-              variant.color === color &&
-              variant.inStock
-          )
-      );
-
-    const orderColors =
-      uniqueColors.filter(
-        (color) =>
-          !availableColors.includes(color)
-      );
-
-    return [
-      ...availableColors,
-      ...orderColors,
-    ];
-  }, [variants]);
-
-  /*
-   * Товщини для вибраного кольору.
-   */
-
-  const thicknesses = useMemo(() => {
-    const thicknessValues = [
-      ...new Set(
-        variants
-          .filter(
-            (variant) =>
-              variant.color === selectedColor
-          )
-          .map(
-            (variant) =>
-              variant.thickness
-          )
-      ),
-    ];
-
-    return thicknessValues.sort(
-      (a, b) => a - b
-    );
-  }, [
-    variants,
-    selectedColor,
-  ]);
-
-  /*
-   * Виробники металу
-   * для вибраного:
-   *
-   * Колір + Товщина
-   */
-
-  const metalBrands = useMemo(() => {
-    const brands = [
-      ...new Set(
-        variants
-          .filter(
-            (variant) =>
-              variant.color === selectedColor &&
-              variant.thickness ===
-                selectedThickness
-          )
-          .map(
-            (variant) =>
-              variant.metalBrand
-          )
-      ),
-    ];
-
-    /*
-     * Спочатку виробники,
-     * у яких товар є в наявності.
-     */
-
-    const availableBrands =
-      brands.filter(
-        (brand) =>
-          variants.some(
-            (variant) =>
-              variant.color === selectedColor &&
-              variant.thickness ===
-                selectedThickness &&
-              variant.metalBrand === brand &&
-              variant.inStock
-          )
-      );
-
-    const orderBrands =
-      brands.filter(
-        (brand) =>
-          !availableBrands.includes(brand)
-      );
-
-    return [
-      ...availableBrands,
-      ...orderBrands,
-    ];
-  }, [
-    variants,
-    selectedColor,
-    selectedThickness,
-  ]);
-
-  /*
-   * Поточний вибраний variant.
-   *
-   * Спочатку шукаємо
-   * варіант в наявності.
-   *
-   * Якщо немає —
-   * беремо під замовлення.
-   */
-
-  const selectedVariant =
-    variants.find(
-      (variant) =>
-        variant.color === selectedColor &&
-        variant.thickness ===
-          selectedThickness &&
-        variant.metalBrand ===
-          selectedMetalBrand &&
-        variant.inStock
-    ) ??
-    variants.find(
-      (variant) =>
-        variant.color === selectedColor &&
-        variant.thickness ===
-          selectedThickness &&
-        variant.metalBrand ===
-          selectedMetalBrand
-    );
-
-  /*
-   * Загальна ціна.
-   */
-
-  const totalMeters = sheetCount * sheetLength;
+  const totalMeters = sheetRows.reduce((sum, row) => sum + row.count * row.length, 0);
   const totalArea = totalMeters * product.usefulWidth;
-  const totalPrice = selectedVariant
-    ? selectedVariant.price * (product.unit === 'м²' ? totalArea : totalMeters)
-    : 0;
-
-  /*
-   * Зміна кольору.
-   *
-   * Автоматично вибираємо:
-   * 1. Variant в наявності
-   * 2. Якщо немає — перший variant
-   *
-   * Також оновлюємо:
-   * - товщину
-   * - виробника
-   */
-
-  const handleColorChange = (
-    color: string
-  ) => {
-    setSelectedColor(color);
-
-    const firstVariant =
-      variants.find(
-        (variant) =>
-          variant.color === color &&
-          variant.inStock
-      ) ??
-      variants.find(
-        (variant) =>
-          variant.color === color
-      );
-
-    if (!firstVariant) {
-      setSelectedThickness(0);
-      setSelectedMetalBrand('');
-
-      return;
-    }
-
-    setSelectedThickness(
-      firstVariant.thickness
-    );
-
-    setSelectedMetalBrand(
-      firstVariant.metalBrand
-    );
-  };
-
-  /*
-   * Зміна товщини.
-   *
-   * Автоматично вибираємо
-   * виробника.
-   */
-
-  const handleThicknessChange = (
-    thickness: number
-  ) => {
-    setSelectedThickness(thickness);
-
-    const firstVariant =
-      variants.find(
-        (variant) =>
-          variant.color ===
-            selectedColor &&
-          variant.thickness ===
-            thickness &&
-          variant.inStock
-      ) ??
-      variants.find(
-        (variant) =>
-          variant.color ===
-            selectedColor &&
-          variant.thickness ===
-            thickness
-      );
-
-    if (!firstVariant) {
-      setSelectedMetalBrand('');
-
-      return;
-    }
-
-    setSelectedMetalBrand(
-      firstVariant.metalBrand
-    );
-  };
-
-  /*
-   * Зміна виробника.
-   */
-
-  const handleMetalBrandChange = (
-    brand: string
-  ) => {
-    setSelectedMetalBrand(brand);
-  };
-
-  /*
-   * Додавання товару в кошик.
-   */
+  const unitPrice = catalogPrice ?? product.manualUnitPrice ?? null;
+  const totalPrice = unitPrice === null ? null : unitPrice * (product.unit === 'м²' ? totalArea : totalMeters);
+  const dimensions = sheetRows.map((row) => `${row.count} шт. × ${row.length} м`).join('; ');
+  const availableFinishes = product.catalogPrices?.filter((item) => item.metalBrand === selectedMetalBrand && item.thickness === selectedThickness && item.paintingType === paintingType).map((item) => finishKey(item.coating));
+  const coatingOptions = availableFinishes?.length
+    ? [...new Set(availableFinishes)].map((value) => FINISHES.find((finish) => finish.value === value) ?? { value, label: value })
+    : FINISHES.filter((finish) => finish.value !== 'PEME' && Boolean(findCatalogColor(selectedColor)?.finishes.includes(finish.value as 'Gloss' | 'Matt')));
+  const quoteHref = `mailto:metalongroup@gmail.com?subject=${encodeURIComponent(`Запит ціни: ${product.title}`)}&body=${encodeURIComponent(`Прошу уточнити ціну та термін виготовлення.\nТовар: ${product.title}\nКолір: ${selectedColor} — ${findCatalogColor(selectedColor)?.name ?? ''}\nФарбування: ${paintingType === 'OneSide' ? 'одностороннє' : 'двостороннє'}\nПокриття: ${coating === 'Matt' ? 'матове РЕМА' : 'глянцеве РЕ'}\nТовщина: ${selectedThickness} мм\nВиробник металу: ${selectedMetalBrand}\nРозміри: ${dimensions}`)}`;
 
   const handleAddToCart = () => {
-    if (!selectedVariant) return;
-
-    addToCart({
-      id: selectedVariant.id,
-      cartId: `${selectedVariant.id}:${sheetLength}`,
-
-      title:
-        `${product.title} — ` +
-        `${selectedVariant.color}, ` +
-        `${selectedVariant.thickness} мм, ` +
-        `${selectedVariant.metalBrand}`,
-
-      price: selectedVariant.price,
-
-      image: product.image,
-
-      slug: product.slug,
-
-      unit: product.unit,
-
-      quantity: sheetCount,
-      length: sheetLength,
-      meters: totalMeters,
-      area: totalArea,
-      total: totalPrice,
+    if (unitPrice === null) return;
+    sheetRows.forEach((row) => {
+      const meters = row.count * row.length;
+      const area = meters * product.usefulWidth;
+      const total = unitPrice! * (product.unit === 'м²' ? area : meters);
+      const options = { color: selectedColor, thickness: selectedThickness, metalBrand: selectedMetalBrand, coating, paintingType };
+      const variantId = selectedVariant?.id;
+      addToCart({
+        id: product.id, ...(variantId ? { variantId } : {}),
+        cartId: `${variantId ?? product.slug}:${row.length}:${JSON.stringify(options)}`,
+        title: `${product.title} — ${selectedColor}, ${selectedThickness} мм, ${selectedMetalBrand}`,
+        price: unitPrice!, image: product.image, slug: product.slug, unit: product.unit,
+        quantity: row.count, length: row.length, meters, area, total,
+        category: product.category, usefulWidth: product.usefulWidth, fullWidth: product.fullWidth, options,
+      });
     });
+  };
+
+  const updateSheetRow = (id: number, field: 'count' | 'length', value: number) => {
+    setSheetRows((rows) => rows.map((row) => row.id === id ? { ...row, [field]: value } : row));
   };
 
   return (
     <div className={styles.configurator}>
-      <h3 className={styles.title}>
-        Оберіть параметри
-      </h3>
-
-      {/* =========================
-          КОЛІР
-      ========================= */}
-
-      {colors.length > 0 && (
-        <div className={styles.group}>
-          <span className={styles.label}>
-            Колір
-          </span>
-
-          <div className={styles.colorGrid}>
-            {colors.map((color) => {
-              const isInStock =
-                variants.some(
-                  (variant) =>
-                    variant.color === color &&
-                    variant.inStock
-                );
-
-              return (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() =>
-                    handleColorChange(color)
-                  }
-                  className={`
-                    ${styles.colorCard}
-                    ${
-                      selectedColor === color
-                        ? styles.colorCardActive
-                        : ''
-                    }
-                  `}
-                  aria-label={
-                    `Обрати колір ${color}`
-                  }
-                >
-                  <span
-                    className={
-                      styles.colorPreview
-                    }
-                    style={{
-                      backgroundColor:
-                        RAL_COLORS[color] ??
-                        '#cccccc',
-                    }}
-                  />
-
-                  <div
-                    className={
-                      styles.colorInfo
-                    }
-                  >
-                    <span
-                      className={
-                        styles.colorCode
-                      }
-                    >
-                      {color}
-                    </span>
-
-                    <span
-                      className={
-                        styles.colorName
-                      }
-                    >
-                      {RAL_NAMES[color] ??
-                        color}
-                    </span>
-
-                    <span
-                      className={
-                        isInStock
-                          ? styles.inStock
-                          : styles.toOrder
-                      }
-                    >
-                      {isInStock
-                        ? 'В наявності'
-                        : 'Під замовлення'}
-                    </span>
-                  </div>
-
-                  {selectedColor === color && (
-                    <span
-                      className={
-                        styles.check
-                      }
-                    >
-                      ✓
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* =========================
-          ТОВЩИНА
-      ========================= */}
-
-      {thicknesses.length > 0 && (
-        <div className={styles.group}>
-          <span className={styles.label}>
-            Товщина металу
-          </span>
-
-          <div className={styles.options}>
-            {thicknesses.map(
-              (thickness) => {
-                const thicknessInStock =
-                  variants.some(
-                    (variant) =>
-                      variant.color ===
-                        selectedColor &&
-                      variant.thickness ===
-                        thickness &&
-                      variant.inStock
-                  );
-
-                return (
-                  <button
-                    key={thickness}
-                    type="button"
-                    onClick={() =>
-                      handleThicknessChange(
-                        thickness
-                      )
-                    }
-                    className={`
-                      ${styles.option}
-                      ${
-                        selectedThickness ===
-                          thickness
-                          ? styles.optionActive
-                          : ''
-                      }
-                      ${
-                        !thicknessInStock
-                          ? styles.optionToOrder
-                          : ''
-                      }
-                    `}
-                  >
-                    {thickness} мм
-
-                    {!thicknessInStock && (
-                      <span
-                        className={
-                          styles.optionStatus
-                        }
-                      >
-                        Під замовлення
-                      </span>
-                    )}
-                  </button>
-                );
-              }
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* =========================
-          ВИРОБНИК МЕТАЛУ
-      ========================= */}
-
-      {metalBrands.length > 0 && (
-        <div className={styles.group}>
-          <span className={styles.label}>
-            Виробник металу
-          </span>
-
-          <div className={styles.options}>
-            {metalBrands.map(
-              (brand) => {
-                const brandInStock =
-                  variants.some(
-                    (variant) =>
-                      variant.color ===
-                        selectedColor &&
-                      variant.thickness ===
-                        selectedThickness &&
-                      variant.metalBrand ===
-                        brand &&
-                      variant.inStock
-                  );
-
-                return (
-                  <button
-                    key={brand}
-                    type="button"
-                    onClick={() =>
-                      handleMetalBrandChange(
-                        brand
-                      )
-                    }
-                    className={`
-                      ${styles.option}
-                      ${
-                        selectedMetalBrand ===
-                          brand
-                          ? styles.optionActive
-                          : ''
-                      }
-                      ${
-                        !brandInStock
-                          ? styles.optionToOrder
-                          : ''
-                      }
-                    `}
-                  >
-                    {brand}
-
-                    {!brandInStock && (
-                      <span
-                        className={
-                          styles.optionStatus
-                        }
-                      >
-                        Під замовлення
-                      </span>
-                    )}
-                  </button>
-                );
-              }
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* =========================
-          ІНФОРМАЦІЯ ПРО МЕТАЛ
-      ========================= */}
-
-      {selectedVariant && (
-        <div className={styles.info}>
-          <div className={styles.infoItem}>
-            <span
-              className={styles.infoLabel}
-            >
-              Статус
-            </span>
-
-            <span
-              className={
-                selectedVariant.inStock
-                  ? styles.inStock
-                  : styles.toOrder
-              }
-            >
-              {selectedVariant.inStock
-                ? 'В наявності'
-                : 'Під замовлення'}
-            </span>
-          </div>
-
-          <div className={styles.infoItem}>
-            <span
-              className={styles.infoLabel}
-            >
-              Покриття
-            </span>
-
-            <span
-              className={styles.infoValue}
-            >
-              {selectedVariant.coating}
-            </span>
-          </div>
-
-          <div className={styles.infoItem}>
-            <span
-              className={styles.infoLabel}
-            >
-              Тип поверхні
-            </span>
-
-            <span
-              className={styles.infoValue}
-            >
-              {selectedVariant.paintingType}
-            </span>
-          </div>
-
-          <div className={styles.infoItem}>
-            <span
-              className={styles.infoLabel}
-            >
-              Виробник
-            </span>
-
-            <span
-              className={styles.infoValue}
-            >
-              {selectedVariant.metalBrand}
-            </span>
-          </div>
-
-          <div className={styles.infoItem}>
-            <span
-              className={styles.infoLabel}
-            >
-              Цинкове покриття
-            </span>
-
-            <span
-              className={styles.infoValue}
-            >
-              {selectedVariant.zincContent}{' '}
-              г/м²
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* =========================
-          КІЛЬКІСТЬ
-      ========================= */}
+      <h3 className={styles.title}>Оберіть параметри</h3>
 
       <div className={styles.group}>
-        <span className={styles.label}>
-          Кількість листів
-        </span>
-
-        <div
-          className={
-            styles.quantityWrapper
-          }
-        >
-          <div
-            className={
-              styles.quantity
-            }
-          >
-            <button
-              type="button"
-              className={
-                styles.quantityButton
-              }
-              onClick={() =>
-                setSheetCount((prev) =>
-                  Math.max(
-                    1,
-                    prev - 1
-                  )
-                )
-              }
-            >
-              −
+        <span className={styles.label}>Колір</span>
+        <div className={styles.colorGrid}>
+          {colors.map((color) => (
+            <button key={color.code} type="button" onClick={() => { setSelectedColor(color.code); setPreviewColor(color.code); if (!color.finishes.includes(coating === 'Matt' ? 'Matt' : 'Gloss')) setCoating(color.finishes[0] ?? 'Gloss'); }}
+              className={`${styles.colorCard} ${selectedColor === color.code ? styles.colorCardActive : ''}`}
+              aria-pressed={selectedColor === color.code} aria-label={`${color.code}, ${color.name}`}>
+              <span className={styles.colorPreview} style={{ backgroundColor: color.hex }} />
+              <span className={styles.colorInfo}><span className={styles.colorCode}>{color.code}</span><span className={styles.colorName}>{color.name}</span></span>
             </button>
-
-            <input
-              type="number"
-              min="1"
-              step="1"
-              inputMode="numeric"
-              className={
-                styles.quantityValue
-              }
-              value={sheetCount}
-              onChange={(event) => {
-                const value = Number(event.target.value);
-                setSheetCount(Number.isInteger(value) && value > 0 ? value : 1);
-              }}
-              aria-label="Кількість листів"
-            />
-
-            <button
-              type="button"
-              className={
-                styles.quantityButton
-              }
-              onClick={() =>
-                setSheetCount(
-                  (prev) => prev + 1
-                )
-              }
-            >
-              +
-            </button>
-          </div>
-
-          <span>
-            шт.
-          </span>
+          ))}
         </div>
       </div>
 
+      <OptionGroup label="Тип фарбування" options={PAINTING_TYPES} selected={paintingType} onSelect={setPaintingType} styles={styles} />
+      <OptionGroup label="Тип поверхні" options={coatingOptions} selected={finishKey(coating)} onSelect={setCoating} styles={styles} />
+      <OptionGroup label="Товщина металу" options={availableThicknesses.map((thickness) => ({ value: String(thickness), label: `${thickness} мм` }))} selected={String(selectedThickness)} onSelect={(value) => setSelectedThickness(Number(value))} styles={styles} />
+      <OptionGroup label="Виробник металу" options={metalBrands.map((brand) => ({ value: brand, label: brand }))} selected={selectedMetalBrand} onSelect={setSelectedMetalBrand} styles={styles} />
+
       <div className={styles.group}>
-        <label className={styles.label} htmlFor="sheet-length">Висота листа, м</label>
-        <input id="sheet-length" className={styles.lengthInput} type="number" min="0.1" step="0.01" value={sheetLength} onChange={(event) => {
-          const value = Number(event.target.value);
-          setSheetLength(Number.isFinite(value) && value > 0 ? value : 0.1);
-        }} />
+        <span className={styles.label}>{product.category === 'Паркан' ? 'Кількість секцій і довжина' : 'Кількість листів і довжина'}</span>
+        <div className={styles.sheetRows}>
+          {sheetRows.map((row, index) => <div className={styles.sheetRow} key={row.id}>
+            <span className={styles.rowNumber}>{String(index + 1).padStart(2, '0')}</span>
+            <label><span>Кількість, шт.</span><input type="number" min="1" step="1" value={row.count} onChange={(event) => updateSheetRow(row.id, 'count', Math.max(1, Math.floor(Number(event.target.value) || 1)))} /></label>
+            <label><span>Довжина, м</span><input type="number" min="0.1" step="0.01" value={row.length} onChange={(event) => updateSheetRow(row.id, 'length', Math.max(0.1, Number(event.target.value) || 0.1))} /></label>
+            {sheetRows.length > 1 && <button type="button" className={styles.removeRow} aria-label={`Прибрати рядок ${index + 1}`} onClick={() => setSheetRows((rows) => rows.filter((item) => item.id !== row.id))}>×</button>}
+          </div>)}
+        </div>
+        <button type="button" className={styles.addRow} onClick={() => { setSheetRows((rows) => [...rows, { id: nextSheetId, count: 1, length: rows[rows.length - 1]?.length ?? 1 }]); setNextSheetId((id) => id + 1); }}>+ Додати іншу довжину</button>
         <span className={styles.calculation}>Разом: {totalMeters.toFixed(2)} м.п. · {totalArea.toFixed(2)} м²</span>
       </div>
 
-      {/* =========================
-          ЗАГАЛЬНА ЦІНА
-      ========================= */}
-
-      <div className={styles.total}>
-        <span
-          className={
-            styles.totalLabel
-          }
-        >
-          Разом:
-        </span>
-
-        <span
-          className={
-            styles.totalPrice
-          }
-        >
-          {totalPrice.toLocaleString(
-            'uk-UA'
-          )}{' '}
-          грн
-        </span>
-      </div>
-
-      {/* =========================
-          ДОДАТИ В КОШИК
-      ========================= */}
-
-      <button
-        type="button"
-        onClick={handleAddToCart}
-        className={styles.addButton}
-        disabled={!selectedVariant}
-      >
-        {selectedVariant
-          ? 'Додати в кошик'
-          : 'Варіант недоступний'}
-      </button>
+      {totalPrice !== null ? <div className={styles.total}><span className={styles.totalLabel}>Разом:</span><span className={styles.totalPrice}>{totalPrice.toLocaleString('uk-UA')} грн</span></div> : <p className={styles.quoteNote}>Ціну для цієї комбінації уточнюйте телефоном.</p>}
+      {totalPrice !== null && <button type="button" onClick={handleAddToCart} className={styles.addButton}>Додати в кошик</button>}
+      <a href={quoteHref} className={`${styles.addButton} ${styles.quoteButton}`}>Уточнити вартість</a>
     </div>
   );
-};
+}
+
+function OptionGroup({ label, options, selected, onSelect, styles }: {
+  label: string; options: Array<{ value: string; label: string }>; selected: string;
+  onSelect: (value: string) => void; styles: Record<string, string>;
+}) {
+  return <div className={styles.group}><span className={styles.label}>{label}</span><div className={styles.options}>
+    {options.map((option) => <button type="button" key={option.value} onClick={() => onSelect(option.value)} aria-pressed={selected === option.value}
+      className={`${styles.option} ${selected === option.value ? styles.optionActive : ''}`}>{option.label}</button>)}
+    {!options.length && <span className={styles.quoteNote}>Параметри узгоджуються під час замовлення.</span>}
+  </div></div>;
+}

@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 import OrderForm from './OrderForm';
 
 export default async function NewOrderPage() {
-  const [customers, products] = await Promise.all([
+  const [customers, products, movements, salesManagers] = await Promise.all([
     prisma.customer.findMany({
       orderBy: {
         name: 'asc',
@@ -31,15 +31,24 @@ export default async function NewOrderPage() {
         title: 'asc',
       },
     }),
+    prisma.stockMovement.findMany({ select: { variantId: true, quantity: true, type: true } }),
+    prisma.employee.findMany({ where: { employeeType: 'SALES', isActive: true }, select: { id: true, name: true }, orderBy: { name: 'asc' } }),
   ]);
+
+  const stockByVariant = new Map<string, number>();
+  for (const movement of movements) {
+    const sign = ['SALE', 'WRITE_OFF', 'RESERVATION'].includes(movement.type) ? -1 : 1;
+    stockByVariant.set(movement.variantId, (stockByVariant.get(movement.variantId) ?? 0) + Number(movement.quantity) * sign);
+  }
 
   const serializedProducts = products.map(
     (product) => ({
       id: product.id,
       title: product.title,
+      category: product.category,
       unit: product.unit,
 
-      variants: product.variants.map(
+      variants: product.variants.filter((variant) => product.isVisible && variant.isVisible || (stockByVariant.get(variant.id) ?? 0) > 0).map(
         (variant) => ({
           id: variant.id,
           thickness: Number(
@@ -54,10 +63,11 @@ export default async function NewOrderPage() {
             variant.zincContent,
           price: Number(variant.price),
           inStock: variant.inStock,
+          stock: stockByVariant.get(variant.id) ?? 0,
         })
       ),
     })
-  );
+  ).filter((product) => product.variants.length > 0);
 
   return (
     <div>
@@ -93,6 +103,7 @@ export default async function NewOrderPage() {
                 customer.companyName,
             })
           )}
+          salesManagers={salesManagers}
           products={serializedProducts}
         />
       </div>

@@ -1,157 +1,66 @@
 'use client';
 
 import Link from 'next/link';
-import styles from './Header.module.css';
 import Image from 'next/image';
+import { ArrowUpRight, Menu, Phone, ShoppingBag, X } from 'lucide-react';
+import styles from './Header.module.css';
 import { Container } from '../Container/Container';
 import { useEffect, useState } from 'react';
-import { useCartStore }from '@/store/cart-store';
+import { useCartStore } from '@/store/cart-store';
 
 const navigation = [
-  {
-    label: 'Каталог',
-    href: '/catalog',
-  },
-  {
-    label: 'Калькулятор',
-    href: '/calculator',
-  },
-  {
-    label: 'Галерея',
-    href: '/gallery',
-  },
-  {
-    label: 'Контакти',
-    href: '/contacts',
-  },
+  { label: 'Продукція', href: '/catalog' },
+  { label: 'Розрахунок', href: '/calculator' },
+  { label: 'Про нас', href: '/about' },
+  { label: 'Як це працює', href: '/#how-it-works' },
+  { label: 'Маршрут', href: '/#navigation' },
 ];
 
-
 export const Header = () => {
-
-    const items =
-    useCartStore((state) => state.items);
-
-  const openCart =
-    useCartStore((state) => state.openCart);
-
-  const totalItems =
-    items.reduce(
-      (acc, item) =>
-        acc + item.quantity,
-      0
-    );
-
-const [isOpen, setIsOpen] = useState(false);
-const [isScrolled, setIsScrolled] = useState(false);
-
-useEffect(() => {
-  const handleScroll = () => {
-    setIsScrolled(window.scrollY > 20);
-  };
-
-  window.addEventListener('scroll', handleScroll);
-
-  return () =>
-    window.removeEventListener('scroll', handleScroll);
-}, []);
+  const items = useCartStore((state) => state.items);
+  const openCart = useCartStore((state) => state.openCart);
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-  document.body.style.overflow = isOpen
-    ? 'hidden'
-    : 'auto';
-}, [isOpen]);
+    const handleScroll = () => setIsScrolled(window.scrollY > 12);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
 
   return (
-    <header
-        className={`${styles.header} ${
-        isScrolled ? styles.scrolled : ''
-      }`}
-      >
-      <Container>
-        <div className={styles.wrapper}>
-          {/* Logo */}
-          <Link href="/" className={styles.logo}>
-             <Image
-                src="/logo_1.svg"
-                alt="METALON GROUP"
-                width={150}
-                height={80}
-                priority
-              />
-          </Link>
-
-          {/* Desktop Navigation */}
-        <nav className={styles.navigation}>
-          {navigation.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={styles.link}
-          >
-            {item.label}
-         </Link>
-          ))}
-        </nav>
-
-                    {/* Actions */}
-          <div className={styles.actions}>
-            <button className="button-primary">
-              Отримати консультацію
-            </button>
-
-          <button
-              className={styles.cartButton}
-              onClick={openCart}
-          >
-            🛒
-            {totalItems > 0 && (
-              <span className={styles.cartCount}>
-                {totalItems}
-              </span>
-            )}
-          </button>
-
-            {/* Burger */}
-              <button className={`${styles.burger} ${
-                 isOpen ? styles.active : ''}`}
-                onClick={() => setIsOpen(!isOpen)}
-              >
-              <span />
-              <span />
-              <span />
-            </button>
-          </div>
-        </div>
-      </Container>
-
-            {/* Mobile Menu */}
-          <div
-              className={`${styles.mobileMenu} ${
-              isOpen ? styles.open : ''
-              }`}
-              onClick={() => setIsOpen(false)}
-          >
-          <div
-              className={styles.mobileContent}
-              onClick={(e) => e.stopPropagation()}
-          >
-            {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={styles.mobileLink}
-              onClick={() => setIsOpen(false)}
-            >
-              {item.label}
+    <>
+      <div className={styles.utility}><Container><span>ВИРОБНИЦТВО МЕТАЛОПРОФІЛЮ · УКРАЇНА</span><a href="tel:+380733885299"><Phone size={13} /> +38 (073) 388-52-99</a></Container></div>
+      <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
+        <Container>
+          <div className={styles.wrapper}>
+            <Link href="/" className={styles.logo} aria-label="Metalon Group — головна сторінка">
+              <Image src="/metalon-mark.svg" alt="" width={42} height={42} priority />
+              <span><b>METALON</b><small>GROUP · METAL SYSTEMS</small></span>
             </Link>
-            ))}
-
-            <button className="button-primary">
-              Консультація
-            </button>
+            <nav className={styles.navigation} aria-label="Основна навігація">
+              {navigation.map((item) => <Link key={item.href} href={item.href} className={styles.link}>{item.label}</Link>)}
+            </nav>
+            <div className={styles.actions}>
+              <Link href="/#contact" className={styles.contactLink}>Обговорити проєкт <ArrowUpRight size={16} /></Link>
+              <button className={styles.cartButton} onClick={openCart} aria-label={`Кошик, товарів: ${totalItems}`}><ShoppingBag size={18} />{totalItems > 0 && <span className={styles.cartCount}>{totalItems}</span>}</button>
+              <button className={styles.burger} onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Закрити меню' : 'Відкрити меню'}>{isOpen ? <X /> : <Menu />}</button>
+            </div>
           </div>
-          </div>
-    </header>
+        </Container>
+      </header>
+      <div className={`${styles.mobileMenu} ${isOpen ? styles.open : ''}`} aria-hidden={!isOpen}>
+        <div className={styles.mobileHead}><Image src="/metalon-mark.svg" alt="" width={42} height={42} /><span>METALON <small>GROUP</small></span></div>
+        <nav aria-label="Мобільна навігація">{navigation.map((item) => <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)}>{item.label}<ArrowUpRight size={20} /></Link>)}</nav>
+        <a className={styles.mobilePhone} href="tel:+380733885299"><Phone size={16} /> +38 (073) 388-52-99</a>
+      </div>
+    </>
   );
 };

@@ -44,7 +44,7 @@ function calculateKgPerMeter(
   thickness: number
 ) {
   return (
-    (Number(width) / 1000) *
+    Number(width) *
     (Number(thickness) / 1000) *
     STEEL_DENSITY
   );
@@ -137,6 +137,7 @@ export default async function ProductionOrderPage({
 
       include: {
         customer: true,
+        productionPlan: { include: { shift: { include: { employees: { include: { employee: true } } } } } },
 
         items: {
           include: {
@@ -150,14 +151,11 @@ export default async function ProductionOrderPage({
         },
 
         productions: {
-          where: {
-            status: 'IN_PROGRESS',
-          },
-
           include: {
             coil: true,
             product: true,
             variant: true,
+            shift: { include: { employees: { include: { employee: true } } } },
           },
 
           orderBy: {
@@ -193,8 +191,8 @@ export default async function ProductionOrderPage({
     );
   }
 
-  const activeProductions =
-    order.productions;
+  const activeProductions = order.productions.filter(p=>p.status==='IN_PROGRESS');
+  const completedProductions = order.productions.filter(p=>p.status==='COMPLETED').sort((a,b)=>b.productionDate.getTime()-a.productionDate.getTime());
 
   const hasActiveProduction =
     activeProductions.length > 0;
@@ -470,6 +468,8 @@ export default async function ProductionOrderPage({
           </span>
         </div>
       </div>
+
+      <div className="production-order-shift"><CalendarDays size={19}/><div><strong>{order.productionPlan?`Заплановано на ${formatDate(order.productionPlan.shift.workDate)}`:'День виробництва ще не призначено'}</strong><span>{order.productionPlan?.shift.employees.length?`Бригада: ${order.productionPlan.shift.employees.map(a=>a.employee.name).join(', ')}`:'Поверніться до плану виробництва й призначте день та працівників зміни.'}</span></div></div>
 
       {/* SUMMARY */}
 
@@ -1069,6 +1069,8 @@ export default async function ProductionOrderPage({
               </div>
             </section>
           )}
+
+          {completedProductions.length>0 && <section className="metal-production-card"><div className="metal-production-card-header"><div><span className="metal-production-kicker"><CheckCircle2 size={15}/> Факт і якість</span><h2>Завершені прокатки</h2><p>Браковані листи окремі від придатного приходу на склад.</p></div></div><div className="metal-production-table-wrap"><table className="metal-production-table"><thead><tr><th>Дата</th><th>Рулон</th><th>Прокатано</th><th>Готова продукція</th><th>Брак, листів</th><th>Зміна</th></tr></thead><tbody>{completedProductions.map(p=><tr key={p.id}><td>{formatDate(p.productionDate)}</td><td>{p.coil.code}</td><td>{formatNumber(Number(p.usedLength||0))} м.п.</td><td>{formatNumber(Number(p.producedQuantity))} м²</td><td>{formatNumber(Number(p.wasteQuantity))}</td><td>{p.shift?.employees.map(e=>e.employee.name).join(', ')||'Бригаду не зафіксовано'}</td></tr>)}</tbody></table></div></section>}
 
           {/* NOTE */}
 

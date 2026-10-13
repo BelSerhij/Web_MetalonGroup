@@ -51,13 +51,17 @@ type Props = {
   posts: FencePost[];
   lags: FenceLag[];
   screws: FenceScrew[];
+  initialLength?: string;
+  initialHeight?: string;
 };
 
 export const FenceCalculator = ({
-    products,
+  products,
   posts,
   lags,
   screws,
+  initialLength = '',
+  initialHeight = '',
 }: Props) => {
 
 const [selectedId, setSelectedId] =
@@ -180,8 +184,8 @@ const selectedScrew = screws.find((item) => item.id === selectedScrewId) || scre
   const sheetPrice = selectedVariant?.price || 0;
   const sheetWidth = selectedProduct.usefulWidth || 1.16;
   const fullWidth = selectedProduct.fullWidth || 1.2;
-  const [width, setWidth] = useState('');
-  const [height, setHeight] = useState('');
+  const [width, setWidth] = useState(initialLength);
+  const [height, setHeight] = useState(initialHeight);
   const widthNum = Number(width);
   const heightNum = Number(height);
 

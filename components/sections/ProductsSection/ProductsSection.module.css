@@ -1,11 +1,11 @@
 .section {
-    padding: 120px 0;
+    padding: 0;
 }
 
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 18px;
 }
 
 @media (max-width: 1200px) {

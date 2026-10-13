@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 
 import { startProduction } from './actions';
+import { canonicalFinish, canonicalManufacturer } from '@/lib/catalog/manufacturers';
+import { findCatalogColor } from '@/lib/catalog/colors';
 
 type Coil = {
   id: string;
@@ -61,7 +63,7 @@ function formatNumber(value: number) {
 
 function kgPerMeter(coil: Coil) {
   return (
-    (Number(coil.width) / 1000) *
+    Number(coil.width) *
     (Number(coil.thickness) / 1000) *
     STEEL_DENSITY
   );
@@ -285,21 +287,21 @@ export default function ProductionCoilSelector({
 
           const compatibleCoils =
             coils.filter(
-              (coil) =>
-                coil.color ===
-                  requirement.color &&
+              (coil) => {
+                const coilColor = findCatalogColor(coil.color)?.code ?? coil.color.trim().toUpperCase();
+                const requiredColor = findCatalogColor(requirement.color)?.code ?? requirement.color.trim().toUpperCase();
+                return coilColor === requiredColor &&
                 Math.abs(
                   Number(coil.thickness) -
                     Number(
                       requirement.thickness
                     )
                 ) < 0.001 &&
-                coil.coating ===
-                  requirement.coating &&
+                canonicalFinish(coil.coating) === canonicalFinish(requirement.coating) &&
                 coil.paintingType ===
                   requirement.paintingType &&
-                coil.metalBrand ===
-                  requirement.metalBrand
+                canonicalManufacturer(coil.metalBrand) === canonicalManufacturer(requirement.metalBrand);
+              }
             );
 
           const selectedAvailable =

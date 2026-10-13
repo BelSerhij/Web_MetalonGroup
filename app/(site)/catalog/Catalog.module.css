@@ -329,3 +329,27 @@
         font-size: 38px;
     }
 }
+
+.page{background:#f3f4ef;color:#1d2a21}
+.filters{padding:17px 0;border-bottom:1px solid #dfe5dc;background:#f5f6f1}
+.filtersWrapper{gap:8px}
+.filterButton{padding:9px 14px;border:1px solid #d8dfd5;border-radius:3px;background:#fff;color:#506052;font-size:11px;font-weight:650}
+.filterButton:hover,.filterButtonActive{border-color:#496747;background:#17251e;color:#f5f6f0;transform:none}
+.products{padding:38px 0 72px}
+.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.card{border:1px solid #dfe5dc;border-radius:4px;background:#f8f9f5;box-shadow:none;transition:transform .25s,border-color .25s}
+.card:hover{transform:translateY(-3px);border-color:#b8c6b1;box-shadow:0 12px 28px #17251e0d}
+.imageWrapper{display:block;position:relative;width:100%;aspect-ratio:1.52;overflow:hidden;background:#e9ede5}
+.image{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s}
+.content{position:relative;display:flex;flex-direction:column;gap:10px;padding:17px}
+.category{margin:0;color:#72865e;font-size:8px;letter-spacing:.12em;text-transform:uppercase}
+.productTitle{margin:0;color:#1d2a21;font-size:20px;font-weight:650;letter-spacing:-.035em}
+.price{color:#526a4e;font-size:14px;font-weight:650}
+.cardActions{gap:8px;margin-top:8px}
+.cardActions > *{flex:1;min-width:0;min-height:46px}
+.detailsButton,.cartButton{display:flex;align-items:center;justify-content:center;min-height:46px;padding:10px 12px;border:1px solid #d8dfd5;border-radius:3px;background:#fff;color:#253128;font-size:13px;font-weight:650;text-decoration:none;transition:border-color .2s,background .2s,color .2s}
+.detailsButton:hover{border-color:#496747;background:#f2f5f0;color:#314a30;transform:none}
+.cartButton{border-color:#37463c;background:#37463c;color:#fff}
+.cartButton:disabled{opacity:.62;cursor:not-allowed}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.filtersWrapper{flex-wrap:nowrap;overflow-x:auto;padding-bottom:5px}.filterButton{width:auto;white-space:nowrap}.products{padding:22px 0 48px}.grid{grid-template-columns:1fr 1fr;gap:8px}.content{gap:8px;padding:11px}.productTitle{font-size:15px}.price{font-size:11px}.cardActions{flex-direction:column}.detailsButton,.cartButton{width:100%;min-height:44px;padding:9px 8px;font-size:12px}.imageWrapper{aspect-ratio:1.15}}

@@ -3,19 +3,23 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 import { prisma } from '@/lib/prisma';
-
 import { createProductVariant } from '@/app/admin/products/actions';
+import { getPricingSettings } from '@/lib/pricing';
+import { VariantCreateFields } from './VariantCreateFields';
 
 type NewVariantPageProps = {
   params: Promise<{
     id: string;
   }>;
+  searchParams?: Promise<{ color?: string; thickness?: string; metalBrand?: string; coating?: string; paintingType?: string }>;
 };
 
 export default async function NewVariantPage({
   params,
+  searchParams,
 }: NewVariantPageProps) {
   const { id } = await params;
+  const defaults = await searchParams;
 
   const product =
     await prisma.product.findUnique({
@@ -27,6 +31,22 @@ export default async function NewVariantPage({
   if (!product) {
     notFound();
   }
+
+  const [variantReferences, pricingSettings] = await Promise.all([
+    prisma.productVariant.findMany({ select: { metalBrand: true, zincContent: true } }),
+    getPricingSettings(),
+  ]);
+  const manufacturers = [...new Set(variantReferences.map((variant) => variant.metalBrand))].sort((a, b) => a.localeCompare(b, 'uk'));
+  const zincFrequency = new Map<string, Map<number, number>>();
+  for (const variant of variantReferences) {
+    const values = zincFrequency.get(variant.metalBrand) ?? new Map<number, number>();
+    values.set(variant.zincContent, (values.get(variant.zincContent) ?? 0) + 1);
+    zincFrequency.set(variant.metalBrand, values);
+  }
+  const zincByManufacturer = Object.fromEntries([...zincFrequency].map(([brand, values]) => [
+    brand,
+    [...values.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0][0],
+  ]));
     
 const createVariant =
   createProductVariant.bind(
@@ -71,6 +91,7 @@ const createVariant =
                 type="number"
                 step="0.01"
                 placeholder="Наприклад: 0.45"
+                defaultValue={defaults?.thickness}
               />
             </div>
 
@@ -84,7 +105,13 @@ const createVariant =
                 name="color"
                 required
                 placeholder="Наприклад: RAL 7016"
+                defaultValue={defaults?.color}
               />
+            </div>
+
+            <div className="admin-form-group">
+              <label htmlFor="imageUrl">Фото цього кольору (шлях або URL)</label>
+              <input id="imageUrl" name="imageUrl" type="text" placeholder="/catalog/colors/ral-3005.jpg" />
             </div>
 
             <div className="admin-form-group">
@@ -95,7 +122,7 @@ const createVariant =
               <select
                 id="coating"
                 name="coating"
-                defaultValue=""
+                defaultValue={defaults?.coating ?? ''}
               >
                 <option value="" disabled>
                   Оберіть покриття
@@ -123,7 +150,7 @@ const createVariant =
               <select
                 id="paintingType"
                 name="paintingType"
-                defaultValue=""
+                defaultValue={defaults?.paintingType ?? ''}
               >
                 <option value="" disabled>
                   Оберіть тип
@@ -139,67 +166,12 @@ const createVariant =
               </select>
             </div>
 
-            <div className="admin-form-group">
-              <label htmlFor="metalBrand">
-                Виробник металу
-              </label>
-
-              <input
-                id="metalBrand"
-                name="metalBrand"
-                required
-                placeholder="Наприклад: POLYSTEEL"
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label htmlFor="zincContent">
-                Вміст цинку, г/м²
-              </label>
-
-              <input
-                id="zincContent"
-                name="zincContent"
-                type="number"
-                required
-                placeholder="Наприклад: 100"
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label htmlFor="price">
-                Ціна, грн
-              </label>
-
-              <input
-                id="price"
-                name="price"
-                type="number"
-                step="0.01"
-                required
-                placeholder="Наприклад: 280"
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label htmlFor="inStock">
-                Статус
-              </label>
-
-              <select
-                id="inStock"
-                name="inStock"
-                defaultValue="true"
-              >
-                <option value="true">
-                  В наявності
-                </option>
-
-                <option value="false">
-                  Під замовлення
-                </option>
-              </select>
-            </div>
+            <VariantCreateFields
+              manufacturers={manufacturers}
+              zincByManufacturer={zincByManufacturer}
+              defaultManufacturer={defaults?.metalBrand}
+              defaultMarkupPercent={pricingSettings.partnerMarkupPercent}
+            />
           </div>
 
           <div className="admin-form-actions">

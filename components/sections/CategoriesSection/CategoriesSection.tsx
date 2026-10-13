@@ -3,39 +3,40 @@ import styles from './CategoriesSection.module.css';
 import { Container } from '../../../components/layout/Container/Container';
 import { SectionTitle } from '../../ui/SectionTitle/SectionTitle';
 import { CategoryCard } from '../../ui/CategoryCard/CategoryCard';
+import Link from 'next/link';
 
 const categories = [
   {
     title: 'Профнастил',
-    image: '/categories/profnastil.jpg',
+    image: '/catalog/wpg/t10.png',
   },
   {
     title: 'Металочерепиця',
-    image: '/categories/Dyzayn.jpg',
+    image: '/catalog/wpg/elite.png',
   },
   {
     title: 'Паркан',
-    image: '/categories/zabor.jpg',
+    image: '/catalog/wpg/fence-rhomb.png',
     },
   {
     title: 'Штахет',
-    image: '/categories/shtakhet.jpg',
+    image: '/catalog/wpg/picket.png',
     },
      {
     title: 'Метал-Сайдинг',
-    image: '/categories/block-haus.jpg',
+    image: '/catalog/wpg/siding-blockhouse.png',
     },
    {
     title: 'Ринви',
-    image: '/categories/vodostochnyesistemy.jpg',
+    image: '/catalog/wpg/gutter.jpg',
     },
    {
     title: 'Плівки',
-    image: '/categories/plenka.jpg',
+    image: '/catalog/wpg/film.png',
     },
   {
     title: 'Комплектуючі',
-    image: '/categories/komplekt.jpg',
+    image: '/catalog/wpg/accessory.png',
   },
 ];
 
@@ -49,9 +50,9 @@ export const CategoriesSection = () => {
             title="Основні категорії"
           />
 
-          <button className="button-secondary">
+          <Link className="button-secondary" href="/catalog">
             Весь каталог
-          </button>
+          </Link>
         </div>
 
         <div className={styles.grid}>
@@ -60,6 +61,7 @@ export const CategoriesSection = () => {
               key={item.title}
               title={item.title}
               image={item.image}
+              category={item.title}
             />
           ))}
         </div>

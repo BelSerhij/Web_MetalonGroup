@@ -1,0 +1,18 @@
+import Link from 'next/link';
+import { Users, Factory, UserRound, Coins } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
+import { createEmployee } from './actions';
+
+const money=(n:number)=>`${n.toLocaleString('uk-UA',{maximumFractionDigits:2})} грн`;
+const meters=(n:number)=>`${n.toLocaleString('uk-UA',{maximumFractionDigits:2})} м.п.`;
+
+export default async function EmployeesPage(){
+  const employees=await prisma.employee.findMany({include:{salesOrders:{where:{status:{in:['SHIPPED','COMPLETED']}},select:{salesBonusPerMeter:true,items:{select:{quantity:true,length:true}}}},shiftAssignments:{include:{shift:{include:{production:{where:{status:'COMPLETED'},select:{usedLength:true}}}}}},payments:{select:{amount:true}}},orderBy:[{employeeType:'asc'},{name:'asc'}]});
+  const cards=employees.map(e=>{const saleMeters=e.salesOrders.reduce((s,o)=>s+o.items.reduce((n,i)=>n+Number(i.quantity)*Number(i.length||0),0),0);const salesEarned=e.salesOrders.reduce((s,o)=>s+o.items.reduce((n,i)=>n+Number(i.quantity)*Number(i.length||0),0)*Number(o.salesBonusPerMeter??e.bonusPerMeter),0);const productionMeters=e.shiftAssignments.reduce((s,a)=>s+a.shift.production.reduce((n,p)=>n+Number(p.usedLength||0),0),0);const productionEarned=e.shiftAssignments.reduce((s,a)=>s+a.shift.production.reduce((n,p)=>n+Number(p.usedLength||0)*Number(a.bonusPerMeter),0),0);const volume=e.employeeType==='SALES'?saleMeters:productionMeters;const earned=e.employeeType==='SALES'?salesEarned:productionEarned;const paid=e.payments.reduce((s,p)=>s+Number(p.amount),0);return {...e,volume,earned,paid,balance:earned-paid};});
+  const group=(type:'PRODUCTION'|'SALES')=>cards.filter(e=>e.employeeType===type);
+  const renderGroup=(type:'PRODUCTION'|'SALES',title:string,Icon:typeof Factory)=>{const list=group(type);return <section className="admin-section-card"><div className="admin-section-header"><div><h2><Icon size={20}/> {title}</h2><p>{list.length} працівників</p></div></div><div className="admin-table-wrapper"><table className="admin-table"><thead><tr><th>Працівник</th><th>Прокатано / продано</th><th>Ставка</th><th>Нараховано</th><th>Виплачено</th><th>Залишок</th></tr></thead><tbody>{list.map(e=><tr key={e.id}><td><Link href={`/admin/employees/${e.id}`}><strong>{e.name}</strong></Link><small>{e.isActive?'Працює':'Неактивний'} · {e.phone||e.email||''}</small></td><td>{meters(e.volume)}</td><td>{money(Number(e.bonusPerMeter))} / м.п.</td><td>{money(e.earned)}</td><td>{money(e.paid)}</td><td><strong>{money(e.balance)}</strong></td></tr>)}</tbody></table></div>{!list.length&&<p>Ще немає працівників цієї групи.</p>}</section>};
+  return <div className="employees-page"><div className="admin-page-header"><div><h1>Працівники</h1><p>Зміни, проданий прокат, бонуси та виплати</p></div></div>
+    <section className="employee-create-card"><div><Users size={22}/><span><strong>Додати працівника</strong><small>Працівники виробництва або менеджери з продажу</small></span></div><form action={createEmployee}><label>Ім’я<input name="name" required placeholder="Ім’я та прізвище"/></label><label>Напрям<select name="employeeType"><option value="PRODUCTION">Виробництво</option><option value="SALES">Продажі</option></select></label><label>Бонус за м.п., грн<input name="bonusPerMeter" type="number" min="0" step="0.01" defaultValue="0" required/></label><label>Телефон<input name="phone"/></label><label>Email<input name="email" type="email"/></label><button className="admin-primary-button">Створити картку</button></form></section>
+    {renderGroup('PRODUCTION','Виробнича команда',Factory)}{renderGroup('SALES','Менеджери з продажу',UserRound)}
+  </div>;
+}

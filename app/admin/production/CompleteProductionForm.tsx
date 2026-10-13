@@ -52,6 +52,8 @@ export default function CompleteProductionForm({
 
   const remainingLength = Math.max(0, Number(availableLength) - Number(usedLength));
   const remainingWeight = remainingLength * Number(kgPerMeter);
+  const estimatedWasteMeters = Math.max(0, Number(usedLength) - producedMeters);
+  const wasteRate = Number(usedLength) > 0 ? estimatedWasteMeters / Number(usedLength) * 100 : 0;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -126,12 +128,12 @@ export default function CompleteProductionForm({
         </div>
 
         <div className="metal-production-form-field">
-          <label htmlFor={`waste-${productionId}`}><Package size={16} /> Брак / відходи</label>
+          <label htmlFor={`waste-${productionId}`}><Package size={16} /> Браковані листи</label>
           <div className="metal-production-input-with-unit">
             <input id={`waste-${productionId}`} type="number" min="0" step="1" value={wasteSheets} disabled={isPending} onChange={(e) => setWasteSheets(e.target.value === '' ? 0 : Number(e.target.value))} />
             <span>шт.</span>
           </div>
-          <small>Фіксується окремо від готової продукції.</small>
+          <small>Ці листи не додаються на склад.</small>
         </div>
       </div>
 
@@ -139,6 +141,7 @@ export default function CompleteProductionForm({
         <div><span>Автоматично використано</span><strong>{formatNumber(actualUsedWeight)} кг</strong></div>
         <div><span>Готова продукція</span><strong>{formatNumber(producedMeters)} м.п.</strong><small>{formatNumber(producedArea)} м²</small></div>
         <div><span>Залишок рулону</span><strong>{formatNumber(remainingLength)} м.п.</strong><small>≈ {formatNumber(remainingWeight)} кг</small></div>
+        <div className="metal-production-waste-stat"><span>Невихід матеріалу, орієнтовно</span><strong>{formatNumber(estimatedWasteMeters)} м.п. · {wasteRate.toFixed(1)}%</strong><small>Різниця між прокатаним металом і придатною продукцією</small></div>
       </div>
 
       {error && <div className="metal-production-error">{error}</div>}

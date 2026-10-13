@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 
 type Product = {
   id: string;
+  variantId?: string;
   cartId: string;
   title: string;
   price: number;
@@ -14,6 +15,10 @@ type Product = {
   meters: number;
   area: number;
   total: number;
+  category?: string;
+  usefulWidth?: number;
+  fullWidth?: number;
+  options?: { color: string; thickness: number; metalBrand: string; coating: string; paintingType: string };
 };
 
 type CartItem = Product;
@@ -129,7 +134,7 @@ export const useCartStore =
       {
         // v3 stores ProductVariant IDs. v2 stored Product IDs from catalog quick-add,
         // which cannot be safely used to create an order.
-        name: 'cart-storage-v4',
+        name: 'cart-storage-v5',
       }
     )
   );

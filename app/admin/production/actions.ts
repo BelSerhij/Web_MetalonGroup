@@ -5,6 +5,43 @@ import { redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
+import { canonicalFinish, canonicalManufacturer } from '@/lib/catalog/manufacturers';
+import { findCatalogColor } from '@/lib/catalog/colors';
+
+export async function saveProductionPlan(formData: FormData) {
+  await requireRole('ADMIN', 'MANAGER');
+  const orderId=String(formData.get('orderId')??'');
+  const date=String(formData.get('workDate')??'');
+  if(!orderId||!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Оберіть замовлення та день виробництва');
+  const order=await prisma.order.findUnique({where:{id:orderId},include:{items:{select:{quantity:true,length:true}},productionPlan:true,productions:{select:{id:true,status:true}}}});
+  if(!order||!['CONFIRMED','IN_PRODUCTION'].includes(order.status)) throw new Error('У розклад можна додати підтверджене замовлення');
+  if(order.productions.some(p=>p.status==='IN_PROGRESS'||p.status==='COMPLETED')) throw new Error('Виробництво вже розпочато. Дату та бригаду зафіксовано.');
+  const plannedMeters=order.items.reduce((sum,item)=>sum+Number(item.quantity)*Number(item.length||0),0);
+  const workDate=new Date(`${date}T00:00:00.000Z`);
+  await prisma.$transaction(async tx=>{
+    const shift=await tx.productionShift.upsert({where:{workDate},create:{workDate},update:{}});
+    await tx.productionPlan.upsert({where:{orderId},create:{orderId,shiftId:shift.id,plannedMeters},update:{shiftId:shift.id,plannedMeters}});
+  });
+  revalidatePath('/admin/production');
+}
+
+export async function saveShiftEmployees(shiftId: string, employeeIds: string[]) {
+  await requireRole('ADMIN', 'MANAGER');
+  const locked=await prisma.production.count({where:{shiftId,status:{in:['IN_PROGRESS','COMPLETED']}}});
+  if(locked>0) throw new Error('У зміні вже є виробництво. Склад бригади зафіксований.');
+  const allowed=await prisma.employee.findMany({where:{id:{in:employeeIds},employeeType:'PRODUCTION',isActive:true},select:{id:true,bonusPerMeter:true}});
+  if(allowed.length!==new Set(employeeIds).size) throw new Error('Перевірте обраних працівників виробництва');
+  await prisma.$transaction(async tx=>{
+    await tx.productionShiftEmployee.deleteMany({where:{shiftId}});
+    if(allowed.length) await tx.productionShiftEmployee.createMany({data:allowed.map(e=>({shiftId,employeeId:e.id,bonusPerMeter:e.bonusPerMeter}))});
+  });
+  revalidatePath('/admin/production');
+}
+
+export async function saveShiftEmployeesForm(shiftId: string, formData: FormData) {
+  const ids=formData.getAll('employeeIds').map(String);
+  await saveShiftEmployees(shiftId,ids);
+}
 
 const STEEL_DENSITY = 7850;
 
@@ -21,7 +58,7 @@ function toNumber(value: unknown): number {
 /**
  * Розрахунок ваги 1 погонного метра рулонного металу.
  *
- * width: мм
+ * width: м (наприклад 1.25 для рулону 1250 мм)
  * thickness: мм
  * result: кг/м.п.
  */
@@ -29,7 +66,7 @@ function calculateKgPerMeter(
   width: unknown,
   thickness: unknown
 ): number {
-  const widthInMeters = toNumber(width) / 1000;
+  const widthInMeters = toNumber(width);
   const thicknessInMeters = toNumber(thickness) / 1000;
 
   return (
@@ -68,6 +105,18 @@ function getAvailableLength(coil: {
   );
 }
 
+function normalizedColor(value: string) {
+  return findCatalogColor(value)?.code ?? value.trim().toLocaleUpperCase('uk-UA');
+}
+
+function sameManufacturer(left: string, right: string) {
+  const canonicalLeft = canonicalManufacturer(left);
+  const canonicalRight = canonicalManufacturer(right);
+  return canonicalLeft && canonicalRight
+    ? canonicalLeft === canonicalRight
+    : left.trim().toLocaleLowerCase('uk-UA') === right.trim().toLocaleLowerCase('uk-UA');
+}
+
 /* ============================================
    ЗАПУСК ВИРОБНИЦТВА
 ============================================ */
@@ -89,7 +138,8 @@ export async function startProduction({
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: {
-      items: { include: { product: true } },
+      items: { include: { product: true, variant: true } },
+      productionPlan: { include: { shift: { include: { employees: { select: { employeeId: true } } } } } },
       productions: {
         where: {
           status: 'IN_PROGRESS',
@@ -113,6 +163,10 @@ export async function startProduction({
       'Для цього замовлення вже запущено виробництво'
     );
   }
+
+  if(!order.productionPlan) throw new Error('Спочатку додайте замовлення до плану на конкретний день.');
+  if(order.productionPlan.shift.employees.length===0) throw new Error('Додайте працівників до зміни перед запуском виробництва.');
+  const productionShiftId=order.productionPlan.shiftId;
 
   if (order.items.length === 0) {
     throw new Error(
@@ -262,6 +316,17 @@ export async function startProduction({
         );
       }
 
+      const variant = item.variant;
+      if (
+        normalizedColor(coil.color) !== normalizedColor(variant.color) ||
+        Math.abs(toNumber(coil.thickness) - toNumber(variant.thickness)) >= 0.001 ||
+        canonicalFinish(coil.coating) !== canonicalFinish(variant.coating) ||
+        coil.paintingType !== variant.paintingType ||
+        !sameManufacturer(coil.metalBrand, variant.metalBrand)
+      ) {
+        throw new Error(`Рулон ${coil.code} не відповідає кольору та характеристикам позиції «${item.product.title}»`);
+      }
+
       const quantity =
         toNumber(item.quantity);
 
@@ -359,6 +424,7 @@ export async function startProduction({
       await tx.production.create({
         data: {
           orderId: order.id,
+          shiftId: productionShiftId,
           coilId: coil.id,
           productId: item.productId,
           variantId: item.variantId,
@@ -368,7 +434,7 @@ export async function startProduction({
           // У Production зберігаємо кількість у складській
           // одиниці товару. Для профнастилу це м².
           producedQuantity:
-            itemMeters * toNumber(item.product.usefulWidth),
+            itemMeters * toNumber(item.width ?? item.product.usefulWidth),
           wasteQuantity: 0,
           productionDate: new Date(),
           note:
@@ -498,6 +564,10 @@ export async function completeProduction({
     );
   }
 
+  const orderItem=production.order?.items.find(item=>item.productId===production.productId&&item.variantId===production.variantId);
+  if(!orderItem) throw new Error('Не знайдено позицію замовлення для цієї операції');
+  if(producedSheets>Number(orderItem.quantity)) throw new Error(`Готових листів не може бути більше за план: ${Number(orderItem.quantity)}`);
+
   const variantId =
     production.variantId;
 
@@ -543,24 +613,7 @@ export async function completeProduction({
    */
   let unitLength = 0;
 
-  if (production.order) {
-    const matchingItem =
-      production.order.items.find(
-        (item) =>
-          item.productId ===
-            production.productId &&
-          item.variantId ===
-            variantId &&
-          Number(item.quantity) > 0
-      );
-
-    if (matchingItem) {
-      unitLength =
-        toNumber(
-          matchingItem.length ?? 0
-        );
-    }
-  }
+  unitLength=toNumber(orderItem.length??0);
 
   if (unitLength <= 0) {
     /*
@@ -579,14 +632,7 @@ export async function completeProduction({
     );
   }
 
-  const matchingProduct =
-    production.order.items.find(
-      (item) =>
-        item.productId ===
-          production.productId &&
-        item.variantId ===
-          variantId
-    )?.product;
+  const matchingProduct = orderItem.product;
 
   if (!matchingProduct) {
     throw new Error(
@@ -594,10 +640,9 @@ export async function completeProduction({
     );
   }
 
-  const usefulWidth =
-    toNumber(
-      matchingProduct.usefulWidth
-    );
+  const usefulWidth = toNumber(
+    orderItem.width ?? matchingProduct.usefulWidth
+  );
 
   if (usefulWidth <= 0) {
     throw new Error('Для товару не задано коректну робочу ширину');

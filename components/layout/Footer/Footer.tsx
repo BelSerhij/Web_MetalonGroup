@@ -13,12 +13,20 @@ const navigation = [
     href: '/calculator',
   },
   {
-    label: 'Галерея',
-    href: '/gallery',
+    label: 'Про нас',
+    href: '/about',
   },
   {
-    label: 'Контакти',
-    href: '/contacts',
+    label: 'Як це працює',
+    href: '/#how-it-works',
+  },
+  {
+    label: 'Контакт',
+    href: '/#contact',
+  },
+  {
+    label: 'Маршрут до виробництва',
+    href: '/#navigation',
   },
 ];
 
@@ -33,10 +41,10 @@ export const Footer = () => {
             <div className={styles.infologo}>
                 <Link href="/" className={styles.logo}>
                 <Image
-                    src="/logo.svg"
-                    alt="METALON GROUP"
-                    width={100}
-                    height={100}
+                    src="/metalon-mark.svg"
+                    alt=""
+                    width={48}
+                    height={48}
                     priority
                 />
                 
@@ -47,7 +55,7 @@ export const Footer = () => {
                     </h3>
 
                     <p className={styles.description}>
-                        Виробник профнастилу, металочерепиці.
+                        Металеві системи для покрівлі, фасаду й огорожі.
                     </p>
                 </div>
                 </Link>
@@ -62,7 +70,7 @@ export const Footer = () => {
                 metalongroup@gmail.com
               </a>
 
-              <p>Шепетівка, Україна</p>
+              <p>Виробництво · с. Сасанівка</p>
             </div>
         </div>
          
@@ -104,9 +112,9 @@ export const Footer = () => {
               та швидко прорахуємо вартість.
             </p>
 
-            <button className="button-primary">
-              Залишити заявку
-            </button>
+            <Link href="/calculator" className="button-primary">
+              Розрахувати матеріал
+            </Link>
           </div>
         </div>
 

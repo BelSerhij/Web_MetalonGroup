@@ -19,11 +19,22 @@ enum UserRole {
   WAREHOUSE
 }
 
+enum EmployeeType {
+  PRODUCTION
+  SALES
+}
+
 enum CoilStatus {
   IN_STOCK
   IN_USE
   FINISHED
   WRITTEN_OFF
+}
+
+enum CoilPriceUnit {
+  PER_KG
+  PER_LINEAR_METER
+  PER_SQUARE_METER
 }
 
 enum ProductionStatus {
@@ -57,6 +68,7 @@ enum PaymentStatus {
   PENDING
   PARTIAL
   PAID
+  OVERPAID
   REFUNDED
 }
 
@@ -80,6 +92,23 @@ model User {
   orders       Order[]  @relation("OrderCreatedBy")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Employee {
+  id              String       @id @default(uuid())
+  name            String
+  phone           String?
+  email           String?
+  employeeType    EmployeeType
+  bonusPerMeter   Decimal      @default(0) @db.Decimal(12, 2)
+  isActive         Boolean      @default(true)
+  salesOrders      Order[]      @relation("SalesManager")
+  shiftAssignments ProductionShiftEmployee[]
+  payments         EmployeePayment[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([employeeType, isActive])
 }
 
 // ============================================
@@ -131,6 +160,7 @@ model Product {
   category       String
   image          String
   unit           String
+  isVisible      Boolean          @default(true)
   usefulWidth    Decimal          @db.Decimal(10, 3)
   fullWidth      Decimal          @db.Decimal(10, 3)
   variants       ProductVariant[]
@@ -159,7 +189,14 @@ model ProductVariant {
   metalBrand     String
   zincContent    Int
   price          Decimal         @db.Decimal(12, 2)
+  imageUrl       String?
+  purchasePrice  Decimal?        @db.Decimal(12, 2)
+  markupType     String          @default("PERCENT")
+  markupValue    Decimal?        @db.Decimal(8, 2)
+  isVisible      Boolean         @default(true)
   inStock        Boolean         @default(true)
+  sourceCoilId   String?         @unique
+  sourceCoil     MetalCoil?      @relation(fields: [sourceCoilId], references: [id], onDelete: SetNull)
   productions    Production[]
   stockMovements StockMovement[]
   orderItems     OrderItem[]
@@ -196,6 +233,10 @@ model MetalCoil {
   currentLength      Decimal?     @db.Decimal(12, 3)
   purchasePrice      Decimal      @db.Decimal(14, 2)
   purchasePricePerKg Decimal?     @db.Decimal(12, 2)
+  purchaseUnit       CoilPriceUnit @default(PER_KG)
+  purchaseUnitPrice  Decimal?      @db.Decimal(12, 2)
+  productSlug        String?
+  pricedVariant      ProductVariant?
   status             CoilStatus   @default(IN_STOCK)
   receivedAt         DateTime     @default(now())
   productions        Production[]
@@ -207,6 +248,26 @@ model MetalCoil {
   @@index([metalBrand])
   @@index([status])
   @@index([supplierId])
+}
+
+model PricingSettings {
+  id                          String  @id @default("default")
+  manufacturingMarkupPercent Decimal @default(20) @db.Decimal(5, 2)
+  partnerMarkupPercent       Decimal @default(18) @db.Decimal(5, 2)
+  updatedAt                   DateTime @updatedAt
+}
+
+model MaterialRate {
+  id            String   @id @default(uuid())
+  metalBrand    String
+  thickness     Decimal  @db.Decimal(5, 3)
+  coating       String
+  paintingType  String
+  pricePerMeter Decimal  @db.Decimal(12, 2)
+  updatedAt     DateTime @updatedAt
+
+  @@unique([metalBrand, thickness, coating, paintingType])
+  @@index([metalBrand, thickness])
 }
 
 // ============================================
@@ -223,6 +284,8 @@ model Production {
   product   Product         @relation(fields: [productId], references: [id])
   variantId String?
   variant   ProductVariant? @relation(fields: [variantId], references: [id])
+  shiftId   String?
+  shift     ProductionShift? @relation(fields: [shiftId], references: [id], onDelete: SetNull)
 
   status           ProductionStatus @default(PLANNED)
   usedWeight       Decimal?         @db.Decimal(12, 3)
@@ -244,6 +307,59 @@ model Production {
   @@index([variantId])
   @@index([productionDate])
   @@index([status])
+  @@index([shiftId])
+}
+
+model ProductionShift {
+  id        String   @id @default(uuid())
+  workDate  DateTime @unique @db.Date
+  note      String?
+  plans     ProductionPlan[]
+  employees ProductionShiftEmployee[]
+  production Production[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workDate])
+}
+
+model ProductionShiftEmployee {
+  id         String          @id @default(uuid())
+  shiftId    String
+  shift      ProductionShift @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  employeeId String
+  employee   Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  bonusPerMeter Decimal      @default(0) @db.Decimal(12, 2)
+  createdAt  DateTime        @default(now())
+
+  @@unique([shiftId, employeeId])
+  @@index([employeeId])
+}
+
+model ProductionPlan {
+  id            String          @id @default(uuid())
+  shiftId       String
+  shift         ProductionShift @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  orderId       String          @unique
+  order         Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  plannedMeters Decimal         @db.Decimal(12, 3)
+  note          String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([shiftId])
+}
+
+model EmployeePayment {
+  id         String   @id @default(uuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  amount     Decimal  @db.Decimal(14, 2)
+  paidAt     DateTime @default(now())
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@index([employeeId, paidAt])
 }
 
 // ============================================
@@ -317,22 +433,31 @@ model Order {
   createdById String?
 
   createdBy User? @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  salesManagerId String?
+  salesManager   Employee? @relation("SalesManager", fields: [salesManagerId], references: [id], onDelete: SetNull)
+  salesBonusPerMeter Decimal? @db.Decimal(12, 2)
 
   status         OrderStatus     @default(NEW)
   paymentStatus  PaymentStatus   @default(PENDING)
   totalAmount    Decimal         @default(0) @db.Decimal(14, 2)
   paidAmount     Decimal         @default(0) @db.Decimal(14, 2)
   totalCostPrice Decimal?        @db.Decimal(14, 2)
+  deliveryService String?
+  deliveryAddress String?
+  trackingNumber String?
   note           String?
   items          OrderItem[]
+  manualItems    OrderManualItem[]
   payments       Payment[]
   stockMovements StockMovement[]
   productions Production[]
+  productionPlan ProductionPlan?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
   @@index([customerId])
   @@index([createdById])
+  @@index([salesManagerId])
   @@index([status])
   @@index([paymentStatus])
   @@index([createdAt])
@@ -364,6 +489,25 @@ model OrderItem {
   @@index([orderId])
   @@index([productId])
   @@index([variantId])
+}
+
+model OrderManualItem {
+  id             String   @id @default(uuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  title          String
+  unit           String   @default("шт.")
+  quantity       Decimal  @db.Decimal(12, 3)
+  length         Decimal? @db.Decimal(10, 3)
+  purchasePrice  Decimal? @db.Decimal(14, 2)
+  price          Decimal  @db.Decimal(14, 2)
+  total          Decimal  @db.Decimal(14, 2)
+  purchaseStatus String   @default("NEEDS_ORDER")
+  note           String?
+  createdAt      DateTime @default(now())
+
+  @@index([orderId])
+  @@index([purchaseStatus])
 }
 
 // ============================================

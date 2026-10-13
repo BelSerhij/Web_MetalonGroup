@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { prisma } from '@/lib/prisma';
+import { saveProductionPlan, saveShiftEmployeesForm } from './actions';
 
 function formatNumber(
   value: number
@@ -75,8 +76,8 @@ function getStatusClass(
 }
 
 export default async function Page() {
-  const orders =
-    await prisma.order.findMany({
+  const [orders, shifts, productionEmployees] = await Promise.all([
+    prisma.order.findMany({
       where: {
         status: {
           in: [
@@ -103,14 +104,36 @@ export default async function Page() {
             status: true,
             usedLength: true,
             producedQuantity: true,
+            wasteQuantity: true,
+            product: { select: { usefulWidth: true } },
           },
         },
+        manualItems: { select: { id: true } },
+        productionPlan: { select: { id: true } },
       },
 
       orderBy: {
         updatedAt: 'desc',
       },
-    });
+    }),
+    prisma.productionShift.findMany({
+      include: {
+        plans: {
+          include: {
+            order: {
+              include: {
+                customer: true,
+                productions: { select: { usedLength: true, coilId: true, status: true } },
+              },
+            },
+          },
+        },
+        employees: { include: { employee: true } },
+      },
+      orderBy: { workDate: 'asc' },
+    }),
+    prisma.employee.findMany({ where: { employeeType: 'PRODUCTION', isActive: true }, orderBy: { name: 'asc' } }),
+  ]);
 
   const productionOrders =
     orders.map((order) => {
@@ -132,7 +155,7 @@ export default async function Page() {
         );
 
       const actualMeters =
-        order.productions.reduce(
+        order.productions.filter((p)=>p.status==='COMPLETED').reduce(
           (
             total,
             production
@@ -146,7 +169,7 @@ export default async function Page() {
         );
 
       const producedQuantity =
-        order.productions.reduce(
+        order.productions.filter((p)=>p.status==='COMPLETED').reduce(
           (
             total,
             production
@@ -158,6 +181,9 @@ export default async function Page() {
             ),
           0
         );
+
+      const defectSheets=order.productions.filter((p)=>p.status==='COMPLETED').reduce((sum,p)=>sum+Number(p.wasteQuantity||0),0);
+      const estimatedWasteMeters=order.productions.filter((p)=>p.status==='COMPLETED').reduce((sum,p)=>sum+Math.max(0,Number(p.usedLength||0)-Number(p.producedQuantity||0)/Number(p.product.usefulWidth||1)),0);
 
       const totalSheets =
         order.items.reduce(
@@ -208,6 +234,8 @@ export default async function Page() {
         plannedMeters,
         actualMeters,
         producedQuantity,
+        defectSheets,
+        estimatedWasteMeters,
         totalSheets,
         completedProductions,
         activeProductions,
@@ -236,6 +264,8 @@ export default async function Page() {
         order.actualMeters,
       0
     );
+  const defectSheets=productionOrders.reduce((sum,o)=>sum+o.defectSheets,0);
+  const estimatedWasteMeters=productionOrders.reduce((sum,o)=>sum+o.estimatedWasteMeters,0);
 
   const waitingCount =
     productionOrders.filter(
@@ -349,6 +379,30 @@ export default async function Page() {
             size={22}
           />
         </div>
+      </section>
+
+      <div className="production-quality-strip"><strong>Контроль якості</strong><span>Браковані листи: <b>{formatNumber(defectSheets)} шт.</b></span><span>Орієнтовний невихід матеріалу: <b>{formatNumber(estimatedWasteMeters)} м.п.</b></span><small>Розрахунок: прокатано мінус придатна площа, перерахована в м.п.</small></div>
+
+      <section className="metal-production-card metal-production-planner">
+        <div className="metal-production-card-header"><div><span className="metal-production-kicker"><CalendarDays size={15}/> Планування</span><h2>План по днях</h2><p>Оберіть день для кожного замовлення та вкажіть бригаду зміни.</p></div></div>
+        <form action={saveProductionPlan} className="production-plan-form">
+          <label>Замовлення<select name="orderId" required defaultValue=""><option value="" disabled>Оберіть замовлення</option>{orders.filter((o)=>(o.status==='CONFIRMED'||o.status==='IN_PRODUCTION')&&o.manualItems.length===0).map(o=><option value={o.id} key={o.id}>№ {o.number} · {o.customer?.name||'Клієнт не вказаний'} · {formatNumber(o.items.reduce((s,i)=>s+Number(i.quantity)*Number(i.length||0),0))} м.п.</option>)}</select></label>
+          <label>День виконання<input type="date" name="workDate" required defaultValue={new Date().toISOString().slice(0,10)}/></label>
+          <button className="admin-primary-button" type="submit">Додати в план</button>
+        </form>
+        {shifts.length===0?<div className="metal-production-empty-inline">План ще порожній. Оберіть замовлення та дату вище.</div>:<div className="production-days">{shifts.map((shift)=>{
+          const meters=shift.plans.reduce((s,p)=>s+Number(p.plannedMeters),0);
+          const completedRuns=shift.plans.flatMap(p=>p.order.productions).filter(r=>r.status==='COMPLETED');
+          const usedMeters=completedRuns.reduce((n,r)=>n+Number(r.usedLength||0),0);
+          const coils=new Set(completedRuns.map(r=>r.coilId)).size;
+          const selected=new Set(shift.employees.map(a=>a.employeeId));
+          return <article className="production-day-card" key={shift.id}>
+            <header><div><CalendarDays size={19}/><strong>{formatDate(shift.workDate)}</strong></div><span>{shift.plans.length} замовлень · {formatNumber(meters)} м.п.</span></header>
+            <div className="production-day-orders">{shift.plans.map(plan=><Link href={`/admin/production/${plan.orderId}`} key={plan.id} className="production-day-order"><span><b>№ {plan.order.number}</b><small>{plan.order.customer?.name||'Клієнт не вказаний'}</small></span><span>{formatNumber(Number(plan.plannedMeters))} м.п.</span></Link>)}</div>
+            <div className="production-day-facts"><span>Виконано: <b>{formatNumber(usedMeters)} м.п.</b></span><span>Задіяно рулонів: <b>{coils}</b></span></div>
+            <form action={saveShiftEmployeesForm.bind(null,shift.id)} className="production-day-team"><strong>Працівники зміни</strong><div>{productionEmployees.map(emp=><label key={emp.id}><input type="checkbox" name="employeeIds" value={emp.id} defaultChecked={selected.has(emp.id)}/>{emp.name}</label>)}</div><button type="submit" className="admin-secondary-button">Зберегти бригаду</button></form>
+          </article>;
+        })}</div>}
       </section>
 
       {/* MAIN CARD */}

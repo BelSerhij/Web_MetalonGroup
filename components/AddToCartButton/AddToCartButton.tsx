@@ -11,6 +11,11 @@ type Props = {
     image: string;
     slug: string;
     unit: string;
+    variantId?: string;
+    category?: string;
+    usefulWidth?: number;
+    fullWidth?: number;
+    options?: { color: string; thickness: number; metalBrand: string; coating: string; paintingType: string };
   };
 };
 
@@ -25,10 +30,14 @@ export const AddToCartButton = ({
     const quantity = 1;
     const length = 1;
     const meters = quantity * length;
+    const area = meters * (product.usefulWidth ?? 1);
+    const billableQuantity = /м²|м2/i.test(product.unit) ? area : meters;
+    const cartId = `${product.variantId ?? product.id}:${length}:${JSON.stringify(product.options ?? {})}`;
 
     addToCart({
       id: product.id,
-      cartId: `${product.id}:${length}`,
+      ...(product.variantId ? { variantId: product.variantId } : {}),
+      cartId,
       title: product.title,
       price: product.price,
       image: product.image,
@@ -37,8 +46,12 @@ export const AddToCartButton = ({
       quantity,
       length,
       meters,
-      area: 0,
-      total: product.price,
+      area,
+      total: product.price * billableQuantity,
+      category: product.category,
+      usefulWidth: product.usefulWidth,
+      fullWidth: product.fullWidth,
+      options: product.options,
     });
   };
 

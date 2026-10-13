@@ -2,7 +2,17 @@ import { prisma } from '@/lib/prisma';
 
 import { CalculatorTabs } from '@/components/calculator/CalculatorTabs';
 
-export default async function CalculatorPage() {
+export default async function CalculatorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string; length?: string; width?: string; planes?: string }>;
+}) {
+  const { type, length, width, planes } = await searchParams;
+  const initialPlanes = ['1', '2', '3', '4'].includes(planes ?? '') ? planes : '2';
+  const initialType =
+    type === 'roof' ? 'Дах' :
+    type === 'fence' ? 'Паркан' :
+    type === 'facade' ? 'Фасад' : undefined;
   const profnastylProducts =
     await prisma.product.findMany({
       where: {
@@ -242,6 +252,10 @@ export default async function CalculatorPage() {
 
   return (
     <CalculatorTabs
+      initialType={initialType}
+      initialLength={length}
+      initialWidth={width}
+      initialPlanes={initialPlanes}
       profnastylProducts={
         normalizedProfnastylProducts
       }

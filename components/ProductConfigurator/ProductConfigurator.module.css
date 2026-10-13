@@ -84,13 +84,13 @@
 }
 
 .option:hover {
-    border-color: #f3a407;
+    border-color: #617e4e;
     transform: translateY(-1px);
 }
 
 .optionActive {
-    border-color: #222;
-    background-color: #222;
+    border-color: #17251e;
+    background-color: #17251e;
     color: #fff;
 }
 
@@ -144,16 +144,16 @@
 }
 
 .colorCard:hover {
-    border-color: #f3a407;
+    border-color: #617e4e;
 
     transform: translateY(-2px);
 }
 
 .colorCardActive {
-    border: 2px solid #222;
+    border: 2px solid #496747;
 
     box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.12);
+        0 4px 12px rgba(23, 37, 30, 0.12);
 }
 
 .colorPreview {
@@ -214,14 +214,14 @@
 
     border-radius: 50%;
 
-    background: #c4f5b8;
-    color: #f3a407;
+    background: #b9d66d;
+    color: #17251e;
 
     font-size: 12px;
     font-weight: 700;
 
     box-shadow:
-        0 1px 5px rgba(239, 177, 5, 0.2);
+        0 1px 5px rgba(23, 37, 30, 0.2);
 }
 
 /* =========================
@@ -331,6 +331,18 @@
     font-size: 14px;
 }
 
+.sheetRows{display:flex;flex-direction:column;gap:8px}
+.sheetRow{display:grid;grid-template-columns:26px 1fr 1fr 28px;gap:9px;align-items:end;padding:10px;border:1px solid #dfe5dc;background:#fafbf8}
+.rowNumber{align-self:center;color:#859184;font-size:9px;letter-spacing:.1em}
+.sheetRow label{display:flex;flex-direction:column;gap:5px;color:#737d73;font-size:9px}
+.sheetRow input{width:100%;min-width:0;padding:9px 10px;border:1px solid #dfe4dc;background:#fff;color:#263229;font-size:13px}
+.removeRow{width:28px;height:34px;border:1px solid #dfe4dc;color:#718070;background:#fff;font-size:18px}
+.addRow{align-self:flex-start;color:#466147;font-size:11px;font-weight:650}
+.quoteNote{padding:13px 15px;border-left:2px solid #91a874;background:#f1f4ed;color:#627064;font-size:12px;line-height:1.6}
+.addButton{display:flex;align-items:center;justify-content:center;text-decoration:none}
+.quoteButton{border:1px solid #17251e;background:#fff;color:#17251e}
+.quoteButton:hover{background:#f1f4ed;color:#17251e}
+
 /* =========================
    Загальна ціна
 ========================= */
@@ -367,7 +379,7 @@
     border: none;
     border-radius: 8px;
 
-    background: #222;
+    background: #17251e;
     color: #fff;
 
     font-size: 16px;
@@ -391,6 +403,8 @@
 ========================= */
 
 @media (max-width: 600px) {
+
+    .sheetRow{grid-template-columns:22px 1fr 1fr 28px;gap:6px;padding:8px}
 
     .colorGrid {
         grid-template-columns:

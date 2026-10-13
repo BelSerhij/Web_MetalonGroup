@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
+import { calculateS10RetailPrice, normalizeCoilPurchasePrice, type CoilPriceUnit } from '@/lib/pricing';
 
 const STEEL_DENSITY = 7850;
 
@@ -95,11 +96,7 @@ function calculateKgPerMeter(
   width: number,
   thickness: number
 ) {
-  return (
-    (width / 1000) *
-    (thickness / 1000) *
-    STEEL_DENSITY
-  );
+  return width * (thickness / 1000) * STEEL_DENSITY;
 }
 
 /* =========================================================
@@ -160,11 +157,7 @@ export async function createMetalCoil(
       'zincContent'
     );
 
-  const width =
-    getRequiredNumber(
-      formData,
-      'width'
-    );
+  const width = 1.25;
 
   const initialWeight =
     getRequiredNumber(
@@ -172,23 +165,8 @@ export async function createMetalCoil(
       'initialWeight'
     );
 
-  const initialLength =
-    getOptionalNumber(
-      formData,
-      'initialLength'
-    );
-
-  const purchasePrice =
-    getRequiredNumber(
-      formData,
-      'purchasePrice'
-    );
-
-  let purchasePricePerKg =
-    getOptionalNumber(
-      formData,
-      'purchasePricePerKg'
-    );
+  const purchaseUnit = getRequiredString(formData, 'purchaseUnit') as CoilPriceUnit;
+  const purchaseUnitPrice = getRequiredNumber(formData, 'purchaseUnitPrice');
 
   /* -------------------------------------------------------
    * ВАЛІДАЦІЯ
@@ -218,28 +196,8 @@ export async function createMetalCoil(
     );
   }
 
-  if (
-    initialLength !== null &&
-    initialLength <= 0
-  ) {
-    throw new Error(
-      'Початкова довжина повинна бути більшою за 0'
-    );
-  }
-
-  if (purchasePrice < 0) {
-    throw new Error(
-      'Вартість закупівлі не може бути відʼємною'
-    );
-  }
-
-  if (
-    purchasePricePerKg !== null &&
-    purchasePricePerKg < 0
-  ) {
-    throw new Error(
-      'Ціна за кг не може бути відʼємною'
-    );
+  if (!['PER_KG', 'PER_LINEAR_METER', 'PER_SQUARE_METER'].includes(purchaseUnit) || purchaseUnitPrice <= 0) {
+    throw new Error('Вкажіть коректну одиницю та ціну постачальника');
   }
 
   /* -------------------------------------------------------
@@ -276,13 +234,9 @@ export async function createMetalCoil(
       thickness
     );
 
-  const resolvedInitialLength =
-    initialLength !== null
-      ? initialLength
-      : weightPerMeter > 0
-        ? initialWeight /
-          weightPerMeter
-        : null;
+  const resolvedInitialLength = weightPerMeter > 0
+    ? initialWeight / weightPerMeter
+    : null;
 
   if (
     resolvedInitialLength === null ||
@@ -296,18 +250,13 @@ export async function createMetalCoil(
     );
   }
 
-  /* -------------------------------------------------------
-   * АВТОМАТИЧНА ЦІНА ЗА КГ
-   * ------------------------------------------------------- */
-
-  if (
-    purchasePricePerKg === null &&
-    initialWeight > 0
-  ) {
-    purchasePricePerKg =
-      purchasePrice /
-      initialWeight;
-  }
+  const price = normalizeCoilPurchasePrice({
+    unit: purchaseUnit,
+    unitPrice: purchaseUnitPrice,
+    thicknessMm: thickness,
+    weightKg: initialWeight,
+    lengthMeters: resolvedInitialLength,
+  });
 
   /* -------------------------------------------------------
    * ПЕРЕВІРКА ПОСТАЧАЛЬНИКА
@@ -335,8 +284,19 @@ export async function createMetalCoil(
    * СТВОРЮЄМО РУЛОН
    * ------------------------------------------------------- */
 
-  const coil =
-    await prisma.metalCoil.create({
+  const pricing = await prisma.pricingSettings.findUnique({ where: { id: 'default' } });
+  const manufacturingMarkupPercent = pricing ? Number(pricing.manufacturingMarkupPercent) : 20;
+  const product = await prisma.product.findUnique({ where: { slug: 'profnastyl-s10' } });
+  if (!product) throw new Error('Спочатку створіть товар С-10 у каталозі');
+  const retailPrice = calculateS10RetailPrice({
+    purchasePricePerKg: price.pricePerKg,
+    thicknessMm: thickness,
+    usefulWidthMeters: Number(product.usefulWidth),
+    manufacturingMarkupPercent,
+  });
+
+  const coil = await prisma.$transaction(async (tx) => {
+    const createdCoil = await tx.metalCoil.create({
       data: {
         code,
 
@@ -370,14 +330,37 @@ export async function createMetalCoil(
         currentLength:
           resolvedInitialLength,
 
-        purchasePrice,
-
-        purchasePricePerKg,
+        purchasePrice: price.totalPrice,
+        purchasePricePerKg: price.pricePerKg,
+        purchaseUnit,
+        purchaseUnitPrice,
+        productSlug: 'profnastyl-s10',
 
         status:
           'IN_STOCK',
       },
     });
+    await tx.productVariant.create({
+      data: {
+        productId: product.id,
+        sourceCoilId: createdCoil.id,
+        thickness,
+        color,
+        coating,
+        paintingType,
+        metalBrand,
+        zincContent: Math.round(zincContent),
+        price: retailPrice,
+        inStock: true,
+      },
+    });
+    await tx.materialRate.upsert({
+      where: { metalBrand_thickness_coating_paintingType: { metalBrand, thickness, coating, paintingType } },
+      create: { metalBrand, thickness, coating, paintingType, pricePerMeter: Number((retailPrice * Number(product.fullWidth)).toFixed(2)) },
+      update: { pricePerMeter: Number((retailPrice * Number(product.fullWidth)).toFixed(2)) },
+    });
+    return createdCoil;
+  });
 
   /* -------------------------------------------------------
    * CACHE
@@ -394,6 +377,8 @@ export async function createMetalCoil(
   revalidatePath(
     '/admin/production'
   );
+  revalidatePath('/catalog');
+  revalidatePath('/catalog/profnastyl-s10');
 
   redirect(
     `/admin/coils/${coil.id}`

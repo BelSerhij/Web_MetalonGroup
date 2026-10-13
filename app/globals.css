@@ -72,19 +72,19 @@ ol {
 
 :root {
   /* COLORS */
-  --color-primary: #f97316;
-  --color-primary-hover: #ea580c;
+  --color-primary: #617e4e;
+  --color-primary-hover: #4e683f;
 
-  --color-background: #ffffff;
-  --color-surface: #f4f4f5;
+  --color-background: #f3f4ef;
+  --color-surface: #e9ede5;
 
-  --color-dark: #18181b;
-  --color-dark-secondary: #27272a;
+  --color-dark: #17251e;
+  --color-dark-secondary: #23362a;
 
-  --color-text: #18181b;
-  --color-text-secondary: #71717a;
+  --color-text: #1d2a21;
+  --color-text-secondary: #657067;
 
-  --color-border: #e4e4e7;
+  --color-border: #dce2d9;
 
   --color-white: #ffffff;
   --color-black: #000000;
@@ -94,10 +94,10 @@ ol {
   --container-padding: 20px;
 
   /* RADIUS */
-  --radius-sm: 12px;
-  --radius-md: 20px;
-  --radius-lg: 28px;
-  --radius-xl: 40px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 
   /* SHADOWS */
   --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.04);

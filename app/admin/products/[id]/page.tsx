@@ -1,14 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import {
-  ArrowLeft,
-  Pencil,
-  Plus,
-  Trash2,
-} from 'lucide-react';
+import { ArrowLeft, Pencil, Plus } from 'lucide-react';
 
 import { prisma } from '@/lib/prisma';
-import { deleteProductVariant } from '@/app/admin/products/actions';
+import { archiveOrDeleteProduct, toggleProductVisibility } from '@/app/admin/products/actions';
+import { VariantsManager } from './VariantsManager';
 
 type ProductPageProps = {
   params: Promise<{
@@ -45,6 +41,29 @@ export default async function ProductPage({
     notFound();
   }
 
+  const siteVariantOptions = await prisma.productVariant.findMany({
+    where: { isVisible: true, product: { isVisible: true } },
+    select: { metalBrand: true, thickness: true },
+  });
+  const siteManufacturers = [...new Set(siteVariantOptions.map((variant) => variant.metalBrand))].sort((a, b) => a.localeCompare(b, 'uk'));
+  const siteThicknesses = [...new Set(siteVariantOptions.map((variant) => Number(variant.thickness)))].sort((a, b) => a - b);
+
+  const publishedCount = product.variants.filter((variant) => variant.isVisible).length;
+  const variants = product.variants.map((variant) => ({
+    id: variant.id,
+    thickness: Number(variant.thickness),
+    color: variant.color,
+    coating: variant.coating,
+    paintingType: variant.paintingType,
+    metalBrand: variant.metalBrand,
+    zincContent: Number(variant.zincContent),
+    price: Number(variant.price),
+    purchasePrice: variant.purchasePrice === null ? null : Number(variant.purchasePrice),
+    markupType: variant.markupType,
+    markupValue: variant.markupValue === null ? null : Number(variant.markupValue),
+    isVisible: variant.isVisible,
+  }));
+
   return (
     <div>
       <div className="admin-page-header">
@@ -73,6 +92,12 @@ export default async function ProductPage({
 
           Редагувати товар
         </Link>
+        <form action={toggleProductVisibility.bind(null, product.id, !product.isVisible)}>
+          <button type="submit" className="admin-secondary-button">{product.isVisible ? 'Сховати товар' : 'Показати товар'}</button>
+        </form>
+        <form action={archiveOrDeleteProduct.bind(null, product.id)}>
+          <button type="submit" className="admin-secondary-button admin-action-button-danger">Видалити товар</button>
+        </form>
       </div>
 
       {/* ОСНОВНА ІНФОРМАЦІЯ */}
@@ -155,8 +180,9 @@ export default async function ProductPage({
             </h2>
 
             <p>
-              Усього: {product.variants.length}
+              Опубліковано: {publishedCount} · приховано: {product.variants.length - publishedCount}
             </p>
+            <p>Оберіть виробника, потім товщину й колір. Нижче з’являться ціни та дії для відповідних варіантів.</p>
           </div>
 
           <Link
@@ -169,121 +195,7 @@ export default async function ProductPage({
           </Link>
         </div>
 
-        <div className="admin-table-wrapper">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Товщина</th>
-                <th>Колір</th>
-                <th>Покриття</th>
-                <th>Фарбування</th>
-                <th>Виробник</th>
-                <th>Цинк</th>
-                <th>Ціна</th>
-                <th>Наявність</th>
-                <th>Дії</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {product.variants.map(
-                (variant) => (
-                  <tr key={variant.id}>
-                    <td>
-                      {Number(
-                        variant.thickness
-                      )} мм
-                    </td>
-
-                    <td>
-                      {variant.color}
-                    </td>
-
-                    <td>
-                      {variant.coating}
-                    </td>
-
-                    <td>
-                      {variant.paintingType}
-                    </td>
-
-                    <td>
-                      {variant.metalBrand}
-                    </td>
-
-                    <td>
-                      {variant.zincContent} г/м²
-                    </td>
-
-                    <td>
-                      {Number(
-                        variant.price
-                      ).toLocaleString(
-                        'uk-UA'
-                      )}{' '}
-                      грн
-                    </td>
-
-                    <td>
-                      <span
-                        className={
-                          variant.inStock
-                            ? 'admin-status admin-status-success'
-                            : 'admin-status admin-status-muted'
-                        }
-                      >
-                        {variant.inStock
-                          ? 'В наявності'
-                          : 'Під замовлення'}
-                      </span>
-                    </td>
-
-<td>
-  <div className="admin-actions">
-    <Link
-      href={`/admin/products/${product.id}/variants/${variant.id}`}
-      className="admin-action-button"
-      aria-label="Редагувати варіант"
-    >
-      <Pencil size={18} />
-    </Link>
-
-    <form
-      action={deleteProductVariant.bind(
-        null,
-        product.id,
-        variant.id
-      )}
-    >
-      <button
-        type="submit"
-        className="admin-action-button admin-action-button-danger"
-        aria-label="Видалити варіант"
-      >
-        <Trash2 size={18} />
-      </button>
-    </form>
-  </div>
-</td>
-                  </tr>
-                )
-              )}
-
-              {product.variants.length ===
-                0 && (
-                <tr>
-                  <td
-                    colSpan={9}
-                    className="admin-empty"
-                  >
-                    У цього товару поки немає
-                    варіантів
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <VariantsManager productId={product.id} productSlug={product.slug} variants={variants} siteManufacturers={siteManufacturers} siteThicknesses={siteThicknesses} />
       </div>
     </div>
   );

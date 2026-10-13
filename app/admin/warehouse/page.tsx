@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
 import {
   Boxes,
   Factory,
@@ -26,7 +27,7 @@ function format(value: number) {
 }
 
 function kgPerMeter(width: number, thickness: number) {
-  return (width / 1000) * (thickness / 1000) * STEEL_DENSITY;
+  return width * (thickness / 1000) * STEEL_DENSITY;
 }
 
 export default async function WarehousePage() {
@@ -145,6 +146,7 @@ export default async function WarehousePage() {
         </div>
 
         <div className="metal-warehouse-topbar-actions">
+          <Link className="admin-secondary-button" href="/admin/warehouse/needed">Необхідно замовити</Link>
           <div className="metal-warehouse-location">
             <Warehouse size={16} />
             {warehouses[0]?.name ?? 'Основний склад'}

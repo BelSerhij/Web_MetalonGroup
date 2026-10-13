@@ -1,0 +1,19 @@
+.about{--ink:#17251e;--moss:#b9d66d;color:#1d2a21;background:#f3f4ef}
+.hero{min-height:470px;position:relative;display:flex;align-items:center;overflow:hidden;background:#17251e;color:#f5f6f0}
+.heroImage{position:absolute;inset:0 0 0 43%;background:linear-gradient(90deg,#17251e 0%,#17251e33 70%),url('/fon.png') center/cover;opacity:.65;animation:enter 1s both}
+.heroContent{position:relative;max-width:720px;padding:74px max(28px,calc((100% - 1248px)/2));padding-right:0;animation:enter .7s .1s both}
+.eyebrow,.label{color:#829181;font-size:9px;font-weight:700;letter-spacing:.17em}
+.eyebrow{display:flex;align-items:center;gap:9px;color:#b9c5b9}.eyebrow span{width:7px;height:7px;border-radius:50%;background:var(--moss)}
+.hero h1{margin:24px 0 16px;font-size:clamp(46px,6vw,74px);line-height:.98;letter-spacing:-.07em;font-weight:570}.hero h1 em{color:var(--moss);font-style:normal}
+.heroContent>p:not(.eyebrow){max-width:440px;color:#c1cbc1;font-size:13px;line-height:1.8}
+.heroContent>a{display:inline-flex;align-items:center;gap:10px;margin-top:24px;color:var(--moss);font-size:11px;font-weight:700}
+.story{display:grid;grid-template-columns:.85fr 1.15fr;gap:8vw;padding:78px max(28px,calc((100% - 1248px)/2));background:#f5f6f1}
+.story h2,.location h2{margin:16px 0;font-size:clamp(38px,4.5vw,58px);line-height:1;letter-spacing:-.065em;font-weight:570}.story h2 em,.location h2 em{color:#62804d;font-style:normal}
+.storyCopy{max-width:620px;padding-top:20px}.storyCopy p,.location>div>p:not(.label){color:#69766b;font-size:13px;line-height:1.85}.storyCopy p+p{margin-top:14px}
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0 max(28px,calc((100% - 1248px)/2)) 78px;background:#f5f6f1}
+.values article{padding:22px;border:1px solid #dce2d8;background:#edf0e9;transition:transform .25s,border-color .25s}.values article:hover{transform:translateY(-4px);border-color:#a8bd88}.values svg{color:#66854e}.values h3{margin:16px 0 7px;font-size:15px}.values p{color:#6c786c;font-size:12px;line-height:1.7}
+.location{display:grid;grid-template-columns:.85fr 1.15fr;gap:7vw;align-items:center;padding:70px max(28px,calc((100% - 1248px)/2));background:#e9ede5}.location>div>p:not(.label){max-width:390px}.location a{display:inline-flex;align-items:center;gap:8px;margin-top:20px;color:#426044;font-size:11px;font-weight:700}.location a svg:first-child{color:#789454}.locationImage{height:320px;background:url('/categories/profnastil.jpg') center/cover;border:1px solid #d4ddd1}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){.heroContent{padding-left:28px}.story,.location{grid-template-columns:1fr;gap:20px;padding-top:58px;padding-bottom:58px}.storyCopy{padding-top:0}.values{padding-bottom:58px}.locationImage{height:280px}}
+@media(max-width:560px){.hero{min-height:420px}.heroImage{inset:0;background:linear-gradient(90deg,#17251eed,#17251e88),url('/fon.png') center/cover}.heroContent{padding:55px 20px}.hero h1{font-size:45px}.story,.location{padding-left:20px;padding-right:20px}.values{grid-template-columns:1fr;padding-left:20px;padding-right:20px}.locationImage{height:230px}}
+@media(prefers-reduced-motion:reduce){.about *{animation:none!important;transition:none!important}}

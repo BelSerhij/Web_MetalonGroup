@@ -10,8 +10,10 @@ export default async function OrdersPage() {
   const orders = await prisma.order.findMany({
     include: {
       customer: true,
+      salesManager: true,
 
       items: true,
+      manualItems: true,
     },
 
     orderBy: {
@@ -33,6 +35,7 @@ export default async function OrdersPage() {
     PENDING: 'Не оплачено',
     PARTIAL: 'Частково',
     PAID: 'Оплачено',
+    OVERPAID: 'Надмірно сплачено',
     REFUNDED: 'Повернено',
   };
 
@@ -69,6 +72,7 @@ export default async function OrdersPage() {
   ) => {
     switch (status) {
       case 'PAID':
+      case 'OVERPAID':
         return 'admin-status-success';
 
       case 'PARTIAL':
@@ -113,6 +117,7 @@ export default async function OrdersPage() {
               <tr>
                 <th>№ Замовлення</th>
                 <th>Клієнт</th>
+                <th>Менеджер</th>
                 <th>Позиції</th>
                 <th>Сума</th>
                 <th>Оплата</th>
@@ -123,7 +128,11 @@ export default async function OrdersPage() {
             </thead>
 
             <tbody>
-              {orders.map((order) => (
+              {orders.map((order) => {
+                const paid=Number(order.paidAmount), total=Number(order.totalAmount);
+                const percent=Math.min(100,total>0?paid/total*100:0);
+                const debt=total-paid;
+                return (
                 <tr key={order.id}>
                   <td>
                     <strong>
@@ -139,9 +148,11 @@ export default async function OrdersPage() {
                     )}
                   </td>
 
+                  <td>{order.salesManager?.name || '—'}</td>
+
                   <td>
                     <span className="admin-badge">
-                      {order.items.length}
+                      {order.items.length + order.manualItems.length}
                     </span>
                   </td>
 
@@ -155,17 +166,7 @@ export default async function OrdersPage() {
                   </td>
 
                   <td>
-                    <span
-                      className={`admin-status ${getPaymentStatusClass(
-                        order.paymentStatus
-                      )}`}
-                    >
-                      {
-                        paymentStatusLabels[
-                          order.paymentStatus
-                        ]
-                      }
-                    </span>
+                    <div className="order-payment-cell"><span className={`admin-status ${getPaymentStatusClass(order.paymentStatus)}`}>{paymentStatusLabels[order.paymentStatus]}</span><div className={`order-payment-track ${order.paymentStatus==='OVERPAID'?'is-overpaid':''}`}><i style={{width:`${percent}%`}}/></div><small>Сплачено {paid.toLocaleString('uk-UA')} / {total.toLocaleString('uk-UA')} грн</small><small>{debt<0?`Переплата ${Math.abs(debt).toLocaleString('uk-UA')} грн`:debt>0?`До сплати ${debt.toLocaleString('uk-UA')} грн`:'Розраховано повністю'}</small></div>
                   </td>
 
                   <td>
@@ -198,12 +199,12 @@ export default async function OrdersPage() {
                     </Link>
                   </td>
                 </tr>
-              ))}
+              )})}
 
               {orders.length === 0 && (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={9}
                     className="admin-empty"
                   >
                     Замовлень поки немає

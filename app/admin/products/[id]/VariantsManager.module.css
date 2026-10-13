@@ -1,0 +1,76 @@
+.manager { display: grid; gap: 16px; }
+.filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 12px; align-items: end; padding: 16px; border: 1px solid #e2e8e1; border-radius: 12px; background: #f8faf7; }
+.filters label { display: grid; gap: 6px; min-width: 0; }
+.filters label span { color: #58645a; font-size: 12px; font-weight: 650; }
+.filters select { min-width: 0; width: 100%; height: 42px; padding: 0 11px; border: 1px solid #d7dfd5; border-radius: 8px; background: white; color: #1f2b22; font: inherit; }
+.filters select:disabled { background: #eef1ed; color: #929a92; cursor: not-allowed; }
+.reset { height: 42px; padding: 0 10px; border: 0; background: transparent; color: #59665c; cursor: pointer; font: inherit; font-size: 13px; }
+.colorPicker { display: grid; gap: 12px; padding: 15px; border: 1px solid #e2e8e1; border-radius: 12px; background: #fff; }
+.colorPickerDisabled { opacity: .62; }
+.pickerHeading { display: flex; align-items: baseline; gap: 10px; }
+.pickerHeading strong { color: #263229; font-size: 13px; }
+.pickerHeading span { color: #778078; font-size: 12px; }
+.colorGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(142px, 1fr)); gap: 7px; }
+.colorOption { display: flex; min-width: 0; align-items: center; gap: 9px; padding: 8px; border: 1px solid #e4e8e2; border-radius: 8px; background: #fff; text-align: left; cursor: pointer; }
+.colorOption:hover:not(:disabled) { border-color: #9cab96; background: #f8faf7; }
+.colorOption:disabled { cursor: not-allowed; }
+.colorOptionActive { border-color: #263c2e; box-shadow: 0 0 0 1px #263c2e; background: #f5f8f4; }
+.colorOptionText { display: grid; min-width: 0; gap: 1px; }
+.colorOptionText strong { color: #263229; font-size: 11px; }
+.colorOptionText small { overflow: hidden; color: #778078; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.colorSwatch { display: inline-block; flex: 0 0 25px; width: 25px; height: 25px; border: 1px solid #d5d9d3; border-radius: 6px; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 18%); }
+.colorSwatchUnknown { background: linear-gradient(135deg, #edf0ec 0 45%, #d3d9d1 45% 55%, #edf0ec 55%); }
+.colorCount { margin-left: auto; color: #657168; font-size: 10px; }
+.combination { display: grid; gap: 8px; padding: 12px; border: 1px solid #e5e9e3; border-radius: 10px; background: #fbfcfa; }
+.combinationHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.combinationHeading > div { display: grid; gap: 3px; }
+.combinationHeading strong { color: #263229; font-size: 13px; }
+.combinationHeading span { color: #778078; font-size: 11px; }
+.combinationActions { display: flex; align-items: center; gap: 8px; }
+.previewLink { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; gap: 6px; padding: 0 10px; border: 1px solid #dfe5dc; border-radius: 7px; color: #425348; background: #fff; text-decoration: none; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.previewLink:hover { border-color: #a5b29f; background: #f5f8f4; }
+.missingPrice { margin: 0; color: #727c73; font-size: 12px; }
+.resultHeading { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #667168; font-size: 13px; }
+.resultHeading strong { color: #1f2b22; }
+.list { display: grid; gap: 8px; }
+.variant { display: grid; grid-template-columns: minmax(180px, 1.3fr) minmax(150px, 1fr) auto auto; gap: 16px; align-items: center; padding: 13px 14px; border: 1px solid #e6eae4; border-radius: 10px; background: white; }
+.variant.hidden { background: #f7f7f6; opacity: .72; }
+.variantMain { display: grid; gap: 7px; }
+.variantTitle { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; color: #263229; font-size: 14px; }
+.variantTitle .colorSwatch { align-self: center; }
+.variantTitle span { color: #606b61; }
+.variantMeta { display: flex; flex-wrap: wrap; gap: 5px 12px; color: #7a837b; font-size: 11px; }
+.priceBlock { display: grid; gap: 3px; }
+.priceBlock strong { color: #17251e; font-size: 15px; }
+.priceBlock span { color: #737c74; font-size: 11px; }
+.markup { color: #166534 !important; font-weight: 650; }
+.discount { color: #b42318 !important; font-weight: 650; }
+.published, .unpublished { white-space: nowrap; border-radius: 999px; padding: 5px 9px; font-size: 11px; font-weight: 650; }
+.published { background: #e8f5e9; color: #216b31; }
+.unpublished { background: #f0f1ef; color: #657065; }
+.actions { display: flex; align-items: center; gap: 5px; }
+.iconButton { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; gap: 4px; padding: 0 8px; border: 1px solid #e0e5de; border-radius: 7px; background: white; color: #566258; cursor: pointer; text-decoration: none; font: inherit; font-size: 11px; }
+.iconButton:hover { border-color: #9cab96; background: #f6f8f5; }
+.delete { color: #b42318; }
+.empty { display: grid; justify-items: center; gap: 6px; padding: 32px 16px; border: 1px dashed #ccd5ca; border-radius: 10px; color: #69746a; text-align: center; }
+.empty strong { color: #334238; font-size: 14px; }
+.empty span { max-width: 440px; font-size: 12px; line-height: 1.5; }
+.addPrice { display: inline-flex; align-items: center; justify-content: center; margin-top: 4px; padding: 9px 12px; border-radius: 8px; background: #17251e; color: white; text-decoration: none; font-size: 12px; font-weight: 650; }
+.addPrice:hover { background: #31463a; }
+@media (max-width: 900px) {
+  .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reset { justify-self: start; }
+  .variant { grid-template-columns: minmax(0, 1fr) minmax(120px, .75fr) auto; }
+  .actions { grid-column: 1 / -1; justify-self: end; }
+}
+@media (max-width: 560px) {
+  .filters { grid-template-columns: 1fr; }
+  .colorGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pickerHeading { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .variant { grid-template-columns: 1fr auto; gap: 10px; }
+  .combinationHeading { align-items: flex-start; flex-direction: column; }
+  .combinationActions { width: 100%; flex-wrap: wrap; }
+  .priceBlock { grid-column: 1; }
+  .published, .unpublished { grid-column: 2; grid-row: 1; }
+  .actions { grid-column: 1 / -1; justify-self: start; }
+}

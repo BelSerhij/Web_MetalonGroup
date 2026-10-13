@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation';
 
 import {
   LayoutDashboard,
+  ChartNoAxesCombined,
   Package,
   CircleDot,
   Factory,
   Warehouse,
   ShoppingCart,
   Users,
+  UserRoundCog,
   Truck,
   Settings,
   LogOut,
@@ -48,6 +50,11 @@ const menuItems = [
     icon: ShoppingCart,
   },
   {
+    title: 'Аналітика',
+    href: '/admin/analytics',
+    icon: ChartNoAxesCombined,
+  },
+  {
     title: 'Клієнти',
     href: '/admin/customers',
     icon: Users,
@@ -56,6 +63,11 @@ const menuItems = [
     title: 'Постачальники',
     href: '/admin/suppliers',
     icon: Truck,
+  },
+  {
+    title: 'Працівники',
+    href: '/admin/employees',
+    icon: UserRoundCog,
   },
   {
     title: 'Налаштування',

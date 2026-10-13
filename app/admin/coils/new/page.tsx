@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 import { createMetalCoil } from '@/app/admin/coils/actions';
+import { CoilPurchasePriceFields } from './CoilPurchasePriceFields';
 
 export default function NewCoilPage() {
   return (
@@ -68,21 +69,6 @@ export default function NewCoilPage() {
                 id="color"
                 name="color"
                 placeholder="Наприклад: RAL 7016"
-                required
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label htmlFor="thickness">
-                Товщина металу, мм
-              </label>
-
-              <input
-                id="thickness"
-                name="thickness"
-                type="number"
-                step="0.001"
-                placeholder="0.45"
                 required
               />
             </div>
@@ -168,78 +154,7 @@ export default function NewCoilPage() {
               />
             </div>
 
-            <div className="admin-form-group">
-              <label htmlFor="width">
-                Ширина рулону, м
-              </label>
-
-              <input
-                id="width"
-                name="width"
-                type="number"
-                step="0.001"
-                placeholder="1.2"
-                required
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label htmlFor="initialWeight">
-                Початкова вага, кг
-              </label>
-
-              <input
-                id="initialWeight"
-                name="initialWeight"
-                type="number"
-                step="0.001"
-                placeholder="5000"
-                required
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label htmlFor="initialLength">
-                Початкова довжина, м
-              </label>
-
-              <input
-                id="initialLength"
-                name="initialLength"
-                type="number"
-                step="0.001"
-                placeholder="1300"
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label htmlFor="purchasePrice">
-                Закупівельна ціна, грн
-              </label>
-
-              <input
-                id="purchasePrice"
-                name="purchasePrice"
-                type="number"
-                step="0.01"
-                placeholder="350000"
-                required
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label htmlFor="purchasePricePerKg">
-                Ціна за кг, грн
-              </label>
-
-              <input
-                id="purchasePricePerKg"
-                name="purchasePricePerKg"
-                type="number"
-                step="0.01"
-                placeholder="70"
-              />
-            </div>
+            <CoilPurchasePriceFields />
 
             <div className="admin-form-group">
               <label htmlFor="status">

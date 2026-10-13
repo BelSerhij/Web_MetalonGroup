@@ -26,8 +26,7 @@ export const CartDrawer = () => {
     items.reduce(
       (acc, item) =>
         acc +
-        item.price *
-        item.quantity,
+        item.total,
       0
     );
 
@@ -76,7 +75,7 @@ export const CartDrawer = () => {
           {items.map((item) => (
 
             <div
-              key={item.id}
+              key={item.cartId}
               className={styles.item}
             >
 
@@ -102,7 +101,7 @@ export const CartDrawer = () => {
                     type="button"
                     onClick={() =>
                       decreaseQuantity(
-                        item.id
+                      item.cartId
                       )
                     }
                     className={
@@ -120,7 +119,7 @@ export const CartDrawer = () => {
                     type="button"
                     onClick={() =>
                       increaseQuantity(
-                        item.id
+                      item.cartId
                       )
                     }
                     className={
@@ -136,19 +135,15 @@ export const CartDrawer = () => {
 
                 <p className={styles.itemPrice}>
                   {item.quantity}
-                  {' × '}
-                  {item.price}
-                  {' грн/'}
-                  {item.unit}
+                    {' × '}
+                    {(item.total / item.quantity).toLocaleString('uk-UA')}
+                    {' грн'}
                 </p>
 
                 <p className={styles.subtotal}>
                   Разом:
                   {' '}
-                  {(
-                    item.price *
-                    item.quantity
-                  ).toFixed(0)}
+                  {item.total.toLocaleString('uk-UA', { maximumFractionDigits: 2 })}
                   {' '}
                   грн
                 </p>
@@ -161,7 +156,7 @@ export const CartDrawer = () => {
                 type="button"
                 onClick={() =>
                   removeFromCart(
-                    item.id
+                    item.cartId
                   )
                 }
                 className={

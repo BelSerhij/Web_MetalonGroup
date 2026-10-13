@@ -108,6 +108,11 @@ export default async function EditVariantPage({
             </div>
 
             <div className="admin-form-group">
+              <label htmlFor="imageUrl">Фото цього кольору (шлях або URL)</label>
+              <input id="imageUrl" name="imageUrl" type="text" placeholder="/catalog/colors/ral-3005.jpg" defaultValue={variant.imageUrl ?? ''} />
+            </div>
+
+            <div className="admin-form-group">
               <label htmlFor="coating">
                 Покриття
               </label>
@@ -118,6 +123,7 @@ export default async function EditVariantPage({
                 required
                 defaultValue={variant.coating}
               >
+                {!['Gloss', 'Matt', 'Zinc'].includes(variant.coating) && <option value={variant.coating}>{variant.coating}</option>}
                 <option value="Gloss">
                   Глянець
                 </option>
@@ -188,7 +194,7 @@ export default async function EditVariantPage({
 
             <div className="admin-form-group">
               <label htmlFor="price">
-                Ціна, грн
+                Ціна продажу, грн
               </label>
 
               <input
@@ -199,6 +205,32 @@ export default async function EditVariantPage({
                 required
                 defaultValue={Number(variant.price)}
               />
+            </div>
+
+            <div className="admin-form-group">
+              <label htmlFor="purchasePrice">Закупівельна ціна, грн</label>
+              <input id="purchasePrice" name="purchasePrice" type="number" min="0" step="0.01" defaultValue={variant.purchasePrice === null ? '' : Number(variant.purchasePrice)} />
+            </div>
+
+            <div className="admin-form-group">
+              <label htmlFor="markupType">Тип націнки</label>
+              <select id="markupType" name="markupType" defaultValue={variant.markupType}>
+                <option value="PERCENT">Відсоток</option>
+                <option value="FIXED">Сума, грн</option>
+              </select>
+            </div>
+
+            <div className="admin-form-group">
+              <label htmlFor="markupValue">Націнка</label>
+              <input id="markupValue" name="markupValue" type="number" step="0.01" defaultValue={variant.markupValue === null ? '' : Number(variant.markupValue)} />
+              <small>Збереження закупівельної ціни та націнки автоматично оновить продажну ціну.</small>
+            </div>
+
+            <div className="admin-form-group">
+              <label htmlFor="isVisible">Відображення на сайті</label>
+              <select id="isVisible" name="isVisible" defaultValue={variant.isVisible ? 'true' : 'false'}>
+                <option value="true">Показувати</option><option value="false">Приховати</option>
+              </select>
             </div>
 
             <div className="admin-form-group">

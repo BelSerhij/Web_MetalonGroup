@@ -26,8 +26,7 @@ useEffect(() => {
 
   const totalPrice =
     items.reduce(
-      (acc, item) =>
-        acc + item.price * item.quantity,
+      (acc, item) => acc + item.total,
       0
     );
 
@@ -90,7 +89,7 @@ useEffect(() => {
               placeholder="Коментар"
             ></textarea>
 
-            <input type="hidden" name="items" value={JSON.stringify(items.map((item) => ({ variantId: item.id, quantity: item.quantity, length: item.length, })))} />
+            <input type="hidden" name="items" value={JSON.stringify(items.map((item) => ({ variantId: item.variantId, productId: item.id, slug: item.slug, title: item.title, image: item.image, unit: item.unit, category: item.category, usefulWidth: item.usefulWidth, fullWidth: item.fullWidth, options: item.options, quantity: item.quantity, length: item.length })))} />
             {state.error && <p role="alert" className={styles.error}>{state.error}</p>}
             <button type="submit" className={styles.submitButton} disabled={pending}>{pending ? 'Надсилаємо…' : 'Оформити замовлення'}</button>
 
@@ -117,14 +116,7 @@ useEffect(() => {
                     {item.title}
                   </p>
 
-                  <p>
-                    {item.quantity}
-                    ×
-                    {' '}
-                    {item.price}
-                    {' '}
-                    грн
-                  </p>
+                  <p>{item.quantity} × {item.length} м · {item.total.toLocaleString('uk-UA', { maximumFractionDigits: 2 })} грн</p>
 
                 </div>
 
