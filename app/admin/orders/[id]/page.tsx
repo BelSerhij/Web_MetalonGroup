@@ -131,14 +131,20 @@ export default async function OrderPage({
 
   const totalSheets =
     order.items.reduce(
-      (total, item) =>
-        total + Number(item.quantity),
+      (total, item) => {
+        const parameters = item.parameters && typeof item.parameters === 'object' && !Array.isArray(item.parameters)
+          ? item.parameters as Record<string, unknown> : {};
+        return total + (parameters.calculation === 'roof-area' ? 0 : Number(item.quantity));
+      },
       0
     );
 
   const totalMeters =
     order.items.reduce(
       (total, item) => {
+        const parameters = item.parameters && typeof item.parameters === 'object' && !Array.isArray(item.parameters)
+          ? item.parameters as Record<string, unknown> : {};
+        if (parameters.calculation === 'roof-area') return total;
         return (
           total +
           Number(item.quantity) *
@@ -147,6 +153,12 @@ export default async function OrderPage({
       },
       0
     );
+
+  const totalRoofArea = order.items.reduce((total, item) => {
+    const parameters = item.parameters && typeof item.parameters === 'object' && !Array.isArray(item.parameters)
+      ? item.parameters as Record<string, unknown> : {};
+    return total + (parameters.calculation === 'roof-area' ? Number(parameters.area ?? item.quantity) : 0);
+  }, 0);
 
   const paidAmount =
     Number(order.paidAmount);
@@ -414,8 +426,12 @@ export default async function OrderPage({
                       item.length ?? 0
                     );
 
+                  const parameters = item.parameters && typeof item.parameters === 'object' && !Array.isArray(item.parameters)
+                    ? item.parameters as Record<string, unknown> : {};
+                  const isRoofArea = parameters.calculation === 'roof-area';
+
                   const totalMeters =
-                    quantity * length;
+                    isRoofArea ? Number(parameters.totalMeters ?? 0) : quantity * length;
 
                   return (
                     <tr key={item.id}>
@@ -437,23 +453,17 @@ export default async function OrderPage({
 
                       <td>
                         {formatNumber(
-                          quantity
+                          isRoofArea ? Number(parameters.area ?? quantity) : quantity
                         )}{' '}
-                        шт.
+                        {isRoofArea ? 'м²' : 'шт.'}
                       </td>
 
                       <td>
-                        {formatNumber(
-                          length
-                        )}{' '}
-                        м
+                        {isRoofArea ? '—' : <>{formatNumber(length)} м</>}
                       </td>
 
                       <td>
-                        {formatNumber(
-                          totalMeters
-                        )}{' '}
-                        м.п.
+                        {isRoofArea ? '—' : <>{formatNumber(totalMeters)} м.п.</>}
                       </td>
 
                       <td>
@@ -495,7 +505,7 @@ export default async function OrderPage({
         </div>
 
         <div className="admin-product-details">
-          <div>
+          {totalSheets > 0 && <div>
             <span>
               Загальна кількість листів
             </span>
@@ -506,9 +516,9 @@ export default async function OrderPage({
               )}{' '}
               шт.
             </strong>
-          </div>
+          </div>}
 
-          <div>
+          {totalMeters > 0 && <div>
             <span>
               Загальна довжина
             </span>
@@ -519,7 +529,12 @@ export default async function OrderPage({
               )}{' '}
               м.п.
             </strong>
-          </div>
+          </div>}
+
+          {totalRoofArea > 0 && <div>
+            <span>Площа металочерепиці</span>
+            <strong>{formatNumber(totalRoofArea)} м²</strong>
+          </div>}
 
           <div>
             <span>

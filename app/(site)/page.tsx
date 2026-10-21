@@ -6,6 +6,8 @@ import { ProductsSection } from '../../components/sections/ProductsSection/Produ
 import { ProjectCalculatorPreview } from '../../components/home/ProjectCalculatorPreview';
 import styles from './home.module.css';
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   return (
     <main className={styles.home}>
@@ -43,6 +45,39 @@ export default function Home() {
       <section className={styles.products}>
         <div className={styles.productIntro}><div><p className={styles.eyebrow}><span /> ДОБІРКА ДЛЯ ПРОЄКТУ</p><h2>Популярні<br /><em>матеріали.</em></h2></div><Link href="/catalog">Увесь каталог <ArrowRight size={16} /></Link></div>
         <ProductsSection />
+      </section>
+
+      <section className={styles.projects} aria-labelledby="projects-title">
+        <div className={styles.projectsIntro}>
+          <div><p className={styles.eyebrow}><span /> ПРИКЛАДИ РІШЕНЬ</p><h2 id="projects-title">Матеріал у<br /><em>готових проєктах.</em></h2></div>
+          <p>Ідеї для покрівлі, фасаду й огорожі. Перегляньте приклади та підберіть рішення для свого об’єкта.</p>
+        </div>
+        <div className={styles.projectGroups}>
+          <article className={styles.projectGroup}>
+            <div className={styles.projectGroupHead}><span>01 / ОГОРОЖІ</span><h3>Огорожа під ваш стиль</h3></div>
+            <div className={styles.projectPhotos}>
+              <figure className={styles.projectPhotoLarge}><Image src="/projects/louver-fence.jpg" alt="Сучасна металева огорожа з горизонтальними ламелями" fill sizes="(max-width: 700px) 100vw, 50vw" /><figcaption>Горизонтальні ламелі · стриманий графіт</figcaption></figure>
+              <figure><Image src="/projects/fence-wood-effect-detail.jpg" alt="Огорожа з металевими планками з текстурою дерева" fill sizes="(max-width: 700px) 100vw, 25vw" /><figcaption>Тепла текстура дерева</figcaption></figure>
+            </div>
+            <Link href="/catalog?category=Паркан">Переглянути огорожі <ArrowRight size={15} /></Link>
+          </article>
+          <article className={styles.projectGroup}>
+            <div className={styles.projectGroupHead}><span>02 / ПОКРІВЛІ</span><h3>Захист і виразний вигляд</h3></div>
+            <div className={styles.projectPhotos}>
+              <figure className={styles.projectPhotoLarge}><Image src="/projects/roof-metal-tile.jpg" alt="Будинок із новою покрівлею з металочерепиці" fill sizes="(max-width: 700px) 100vw, 50vw" /><figcaption>Металочерепиця на житловому будинку</figcaption></figure>
+              <figure><Image src="/projects/metal-tile-roof-detail.jpg" alt="Деталь покрівлі з металочерепиці та покрівельними планками" fill sizes="(max-width: 700px) 100vw, 25vw" /><figcaption>Покрівельні деталі й примикання</figcaption></figure>
+            </div>
+            <Link href="/catalog?category=Металочерепиця">Обрати покрівлю <ArrowRight size={15} /></Link>
+          </article>
+          <article className={styles.projectGroup}>
+            <div className={styles.projectGroupHead}><span>03 / ФАСАДИ</span><h3>Оздоблення з характером</h3></div>
+            <div className={styles.projectPhotos}>
+              <figure className={styles.projectPhotoLarge}><Image src="/projects/facade-wood-effect.jpg" alt="Фасад будинку з металевим оздобленням під дерево" fill sizes="(max-width: 700px) 100vw, 50vw" /><figcaption>Фасад у відтінку натурального дерева</figcaption></figure>
+              <figure><Image src="/projects/facade-metal-wood-effect.jpg" alt="Металеве фасадне оздоблення з деревною текстурою" fill sizes="(max-width: 700px) 100vw, 25vw" /><figcaption>Текстуроване фасадне оздоблення</figcaption></figure>
+            </div>
+            <Link href="/catalog?category=Метал-Сайдинг">Переглянути фасадні матеріали <ArrowRight size={15} /></Link>
+          </article>
+        </div>
       </section>
 
       <section className={styles.navigation} id="navigation">

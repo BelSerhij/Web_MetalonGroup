@@ -114,6 +114,8 @@ export const CartDrawer = () => {
 
                   <span>
                     {item.quantity}
+                    {' '}
+                    {item.category === 'Металочерепиця' ? 'м²' : ['profnastyl-s10', 'profnastyl-t18', 'profnastyl-t45'].includes(item.slug) ? 'листів' : item.unit}
                   </span>
 
                   <button
@@ -138,7 +140,7 @@ export const CartDrawer = () => {
                   {item.quantity}
                     {' × '}
                     {formatMoney(item.total / item.quantity)}
-                    {' грн'}
+                    {item.category === 'Металочерепиця' ? ' грн/м²' : ['profnastyl-s10', 'profnastyl-t18', 'profnastyl-t45'].includes(item.slug) ? ' грн/лист' : ` грн/${item.unit}`}
                 </p>
 
                 <p className={styles.subtotal}>

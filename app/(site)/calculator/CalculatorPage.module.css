@@ -52,3 +52,52 @@
 }
 
 @media(max-width:640px){.page{padding:36px 0 48px}.tabs{gap:7px;margin-bottom:18px}.tab{padding:9px 12px;font-size:12px}}
+
+.calculator{padding:28px;border:1px solid #e1e5dd;border-radius:16px;background:#fff;box-shadow:0 12px 40px #17251e0a;color:#17251e}
+.calculatorIntro>span,.calculatorSummary>span{color:#6e806d;font-size:11px;font-weight:750;letter-spacing:.1em}
+.calculatorIntro h2{margin:8px 0;font-size:clamp(23px,3vw,32px);letter-spacing:-.04em}
+.calculatorIntro p,.pricePicker>p,.informationalColors p{margin:0;color:#718078;font-size:14px;line-height:1.55}
+.calculatorTabs{display:flex;gap:8px;overflow:auto;margin:24px 0;padding-bottom:4px}
+.calculatorTabs button{flex:none;padding:11px 15px;border:1px solid #dce3da;border-radius:8px;background:#fff;color:#405044;font-size:13px;font-weight:650;cursor:pointer}
+.calculatorTabs .calculatorTabActive{border-color:#26452e;background:#26452e;color:#fff}
+.calculatorGrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(220px,.85fr) minmax(240px,.9fr);gap:18px;align-items:start}
+.calculatorForm,.pricePicker,.calculatorSummary{padding:20px;border:1px solid #e4e9e2;border-radius:12px;background:#fbfcfa}
+.calculatorForm h3,.pricePicker h3,.informationalColors h3{margin:0 0 14px;font-size:17px;letter-spacing:-.02em}
+.measureRow{display:grid;grid-template-columns:20px minmax(0,1fr) minmax(0,1fr) 25px;gap:9px;align-items:end;margin-bottom:12px}
+.measureRow>b{align-self:center;color:#718078;font-size:12px}
+.measureRow label,.singleField{display:grid;gap:6px;color:#526056;font-size:12px;font-weight:600}
+.measureRow input,.singleField input,.singleField select{width:100%;height:42px;padding:0 11px;border:1px solid #dbe2d9;border-radius:7px;background:#fff;color:#1e2d23;font:inherit;font-size:14px;outline:none}
+.measureRow input:focus,.singleField input:focus,.singleField select:focus{border-color:#527b55;box-shadow:0 0 0 3px #527b5517}
+.measureRow>button{height:38px;border:0;background:transparent;color:#879188;font-size:22px;cursor:pointer}
+.addDimension{margin:0 0 18px;padding:0;border:0;background:none;color:#386241;font-size:13px;font-weight:700;cursor:pointer}
+.singleField{margin-top:15px}
+.priceList{display:grid;gap:8px;margin-top:16px}
+.priceList button{display:grid;gap:5px;padding:12px;border:1px solid #e1e6df;border-radius:9px;background:#fff;color:#26372b;text-align:left;cursor:pointer}
+.priceList button small{color:#778478;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.priceList button strong{font-size:13px}
+.priceList button b{color:#304d35;font-size:12px}
+.priceList .priceCardActive{border-color:#456c49;background:#f0f5ef;box-shadow:0 0 0 1px #456c4930}
+.noRates{color:#718078;font-size:13px;line-height:1.5}
+.calculatorSummary{position:sticky;top:20px;background:#f1f5ef}
+.summaryMain{display:grid;gap:5px;padding:20px 0 14px;border-bottom:1px solid #dce5da}
+.summaryMain small{color:#67776a;font-size:12px}
+.summaryMain strong{font-size:36px;letter-spacing:-.05em}
+.summaryMain i{font-size:16px;font-style:normal;font-weight:600}
+.calculatorSummary>p{display:flex;justify-content:space-between;gap:12px;margin:12px 0;color:#58665c;font-size:12px}
+.calculatorSummary>p b{color:#24372a;text-align:right;white-space:nowrap}
+.summaryTotal{display:grid;gap:6px;margin-top:16px;padding-top:16px;border-top:1px solid #dce5da}
+.summaryTotal span{color:#536256;font-size:12px}
+.summaryTotal strong{font-size:25px;letter-spacing:-.04em}
+.calculatorSummary>small{display:block;margin-top:12px;color:#748077;font-size:11px;line-height:1.5}
+.informationalColors{margin-top:20px;padding:20px;border:1px solid #e4e9e2;border-radius:12px}
+.informationalColors>div:first-child{margin-bottom:16px}
+.informationalColors h3{margin-bottom:5px}
+.informationalColors p{font-size:12px}
+.colorGrid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:8px}
+.colorItem{display:grid;min-width:0;justify-items:center;gap:5px;color:#39473d;text-align:center}
+.colorItem>span{width:100%;height:36px;border:1px solid #d6dcd4;border-radius:5px;transition:transform .16s ease,box-shadow .16s ease}
+.colorItem:hover>span{z-index:1;transform:scale(1.35);box-shadow:0 4px 15px #17251e35}
+.colorItem>b{font-size:10px;white-space:nowrap}
+.colorItem>small{overflow:hidden;max-width:100%;color:#788279;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:1050px){.calculatorGrid{grid-template-columns:1fr 1fr}.calculatorSummary{position:static;grid-column:1/-1}.colorGrid{grid-template-columns:repeat(8,minmax(0,1fr))}}
+@media(max-width:640px){.calculator{padding:16px;border-radius:12px}.calculatorIntro p{font-size:13px}.calculatorTabs{margin:18px 0}.calculatorTabs button{padding:10px 12px;font-size:12px}.calculatorGrid{grid-template-columns:1fr;gap:12px}.calculatorForm,.pricePicker,.calculatorSummary,.informationalColors{padding:16px}.calculatorSummary{grid-column:auto}.measureRow{grid-template-columns:15px minmax(0,1fr) minmax(0,1fr) 20px;gap:6px}.measureRow label{font-size:10px}.measureRow input{height:40px;padding:0 8px}.colorGrid{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px 7px}.colorItem>span{height:38px}.colorItem>b{font-size:9px}.colorItem>small{font-size:8px}}

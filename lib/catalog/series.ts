@@ -62,8 +62,8 @@ export const productSeries: ProductSeries[] = [
   {
     title: 'С-10', slug: 'profnastyl-s10', category: 'Профнастил',
     description: 'Профнастил С-10 на основі профілю Т-10: низька хвиля 10 мм і широка корисна площа для огорож, фасадів та підшиви.',
-    image: '/catalog/wpg/t10.png', unit: 'м²', fullWidth: 1.19, usefulWidth: 1.17, drawing: 'profile', drawingAsset: '/catalog/diagrams/t10.png', drawingHeight: 10,
-    specs: [{ label: 'Висота профілю', value: '10 мм' }, { label: 'Повна ширина', value: '1190 мм' }, { label: 'Корисна ширина', value: '1170 мм' }, { label: 'Поперечне перекриття', value: '20 мм' }, { label: 'Матеріал', value: 'Оцинкована або пофарбована сталь' }, { label: 'Товщина сталі', value: '0,45–0,50 мм за даними виробника' }], sourceUrl: `${profiled}/t-10`,
+    image: '/catalog/wpg/t10.png', unit: 'м²', fullWidth: 1.19, usefulWidth: 1.16, drawing: 'profile', drawingAsset: '/catalog/diagrams/t10.svg', drawingHeight: 10,
+    specs: [{ label: 'Висота профілю', value: '10 мм' }, { label: 'Повна ширина', value: '1190 мм' }, { label: 'Корисна ширина', value: '1160 мм' }, { label: 'Поперечне перекриття', value: '30 мм' }, { label: 'Матеріал', value: 'Оцинкована або пофарбована сталь' }, { label: 'Товщина сталі', value: '0,45–0,50 мм за даними виробника' }], sourceUrl: `${profiled}/t-10`,
   },
   {
     title: 'Т-18', slug: 'profnastyl-t18', category: 'Профнастил',
