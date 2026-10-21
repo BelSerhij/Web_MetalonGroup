@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 420" role="img" aria-labelledby="title desc">
+  <title id="title">Креслення профнастилу С-10</title>
+  <desc id="desc">Профіль висотою 10 мм, повна ширина 1190 мм, корисна ширина 1160 мм.</desc>
+  <g fill="none" stroke="#455447" stroke-width="2">
+    <path d="M90 165h48l25-22h42l25 22h45l26-22h62l24 22h45l26-22h62l25 22h45l26-22h62l24 22h45l26-22h62l25 22h45l26-22h62l24 22h45l26-22h62l25 22h45l26-22h62l24 22h45l26-22h62l25 22h45l26-22h62l24 22h45l26-22h62l25 22h48"/>
+    <path d="M90 220v58m1220-58v58M90 252h1220M90 310v42m1220-42v42M90 334h1220"/>
+    <path d="m90 252 13-7v14zm1220 0-13-7v14zM90 334l13-7v14zm1220 0-13-7v14z" fill="#455447"/>
+    <path d="M55 165v-10m0 10v24m0-24v-40m-12 0h24m-24 40h24"/>
+    <path d="M138 180v-40m48 40v-40m-48-8h48m0 0-7 12m7-12 7 12"/>
+    <path d="M229 135v-28m62 28v-28m-62-10h62m0 0-7 12m7-12 7 12"/>
+  </g>
+  <g fill="#354438" font-family="Arial,sans-serif" text-anchor="middle">
+    <text x="700" y="244" font-size="28">1160 мм · корисна ширина</text>
+    <text x="700" y="326" font-size="23">1190 мм · повна ширина</text>
+    <text x="42" y="152" font-size="20">10</text>
+    <text x="162" y="125" font-size="18">20</text>
+    <text x="260" y="92" font-size="18">68</text>
+    <text x="700" y="395" font-size="18" letter-spacing="2">ПОПЕРЕЧНИЙ ПЕРЕРІЗ ПРОФНАСТИЛУ С-10</text>
+  </g>
+</svg>

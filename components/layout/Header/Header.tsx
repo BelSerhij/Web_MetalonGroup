@@ -12,14 +12,13 @@ const navigation = [
   { label: 'Продукція', href: '/catalog' },
   { label: 'Розрахунок', href: '/calculator' },
   { label: 'Про нас', href: '/about' },
-  { label: 'Як це працює', href: '/#how-it-works' },
   { label: 'Маршрут', href: '/#navigation' },
 ];
 
 export const Header = () => {
   const items = useCartStore((state) => state.items);
   const openCart = useCartStore((state) => state.openCart);
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = items.reduce((sum, item) => sum + (item.category === 'Металочерепиця' ? 1 : item.quantity), 0);
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 

@@ -1,18 +1,11 @@
 import { prisma } from '@/lib/prisma';
 
 import { CalculatorTabs } from '@/components/calculator/CalculatorTabs';
+import { canonicalizeMaterialRates } from '@/lib/catalog/manufacturers';
 
-export default async function CalculatorPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ type?: string; length?: string; width?: string; planes?: string }>;
-}) {
-  const { type, length, width, planes } = await searchParams;
-  const initialPlanes = ['1', '2', '3', '4'].includes(planes ?? '') ? planes : '2';
-  const initialType =
-    type === 'roof' ? 'Дах' :
-    type === 'fence' ? 'Паркан' :
-    type === 'facade' ? 'Фасад' : undefined;
+export const dynamic = 'force-dynamic';
+
+export default async function CalculatorPage() {
   const profnastylProducts =
     await prisma.product.findMany({
       where: {
@@ -43,14 +36,7 @@ export default async function CalculatorPage({
       },
     });
 
-  const posts =
-    await prisma.fencePost.findMany();
-
-  const lags =
-    await prisma.fenceLag.findMany();
-
-  const screws =
-    await prisma.fenceScrew.findMany();
+  const materialRates = await prisma.materialRate.findMany();
 
   /*
    * =========================================================
@@ -164,98 +150,16 @@ export default async function CalculatorPage({
       metalTileProducts
     );
 
-  /*
-   * =========================================================
-   * НОРМАЛІЗАЦІЯ СТОВПІВ
-   * =========================================================
-   */
-
-  const normalizedPosts =
-    posts.map((post) => ({
-      id: post.id,
-
-      title:
-        post.title,
-
-      size:
-        post.size,
-
-      thickness:
-        Number(
-          post.thickness
-        ),
-
-      length:
-        Number(
-          post.length
-        ),
-
-      price:
-        Number(
-          post.price
-        ),
-    }));
-
-  /*
-   * =========================================================
-   * НОРМАЛІЗАЦІЯ ЛАГ
-   * =========================================================
-   */
-
-  const normalizedLags =
-    lags.map((lag) => ({
-      id: lag.id,
-
-      title:
-        lag.title,
-
-      size:
-        lag.size,
-
-      thickness:
-        Number(
-          lag.thickness
-        ),
-
-      length:
-        Number(
-          lag.length
-        ),
-
-      price:
-        Number(
-          lag.price
-        ),
-    }));
-
-  /*
-   * =========================================================
-   * НОРМАЛІЗАЦІЯ САМОРІЗІВ
-   * =========================================================
-   */
-
-  const normalizedScrews =
-    screws.map((screw) => ({
-      id: screw.id,
-
-      title:
-        screw.title,
-
-      size:
-        screw.size,
-
-      price:
-        Number(
-          screw.price
-        ),
-    }));
+  const normalizedRates = canonicalizeMaterialRates(materialRates).map((rate) => ({
+    metalBrand: rate.metalBrand,
+    thickness: Number(rate.thickness),
+    coating: rate.coating,
+    paintingType: rate.paintingType,
+    pricePerMeter: Number(rate.pricePerMeter),
+  }));
 
   return (
     <CalculatorTabs
-      initialType={initialType}
-      initialLength={length}
-      initialWidth={width}
-      initialPlanes={initialPlanes}
       profnastylProducts={
         normalizedProfnastylProducts
       }
@@ -267,18 +171,7 @@ export default async function CalculatorPage({
       metalTileProducts={
         normalizedMetalTileProducts
       }
-
-      posts={
-        normalizedPosts
-      }
-
-      lags={
-        normalizedLags
-      }
-
-      screws={
-        normalizedScrews
-      }
+      rates={normalizedRates}
     />
   );
 }

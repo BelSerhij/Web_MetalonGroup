@@ -117,7 +117,11 @@ useEffect(() => {
                     {item.title}
                   </p>
 
-                  <p>{item.quantity} × {item.length} м · {formatMoney(item.total)} грн</p>
+                  <p>{item.category === 'Металочерепиця'
+                    ? `${item.quantity.toLocaleString('uk-UA')} м²`
+                    : ['profnastyl-s10', 'profnastyl-t18', 'profnastyl-t45'].includes(item.slug)
+                      ? `${item.quantity} листів × ${item.length} м`
+                      : `${item.quantity} × ${item.length} м`} · {formatMoney(item.total)} грн</p>
 
                 </div>
 

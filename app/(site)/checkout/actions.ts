@@ -16,8 +16,9 @@ const checkoutSchema = z.object({
   items: z.array(z.object({
     variantId: z.string().uuid().optional(),
     slug: z.string().min(1).max(160),
-    quantity: z.number().int().positive().max(10_000),
+    quantity: z.number().finite().positive().max(10_000),
     length: z.number().finite().positive().max(100),
+    category: z.string().max(120).optional(),
     options: z.object({
       color: z.string().max(80), thickness: z.number().positive(), metalBrand: z.string().max(160),
       coating: z.string().max(80), paintingType: z.string().max(40),
@@ -70,11 +71,12 @@ export async function submitWebsiteOrder(_: CheckoutState, formData: FormData): 
       : existingVariant && existingVariant.product.slug === item.slug ? Number(existingVariant.price) : null;
     if (unitPrice === null) return { error: `Ціна для «${series?.title ?? record?.title}» за обраними параметрами ще не внесена до прайсу.` };
 
-    prepared.push({ item, series, record, existingVariant, options, width, usefulWidth, unit, unitPrice });
+    const category = series?.category ?? record?.category ?? item.category ?? '';
+    prepared.push({ item, series, record, existingVariant, options, width, usefulWidth, unit, unitPrice, category });
   }
 
-  const calculated: Array<{ item: (typeof input.items)[number]; productId: string; variantId: string; options: NonNullable<(typeof input.items)[number]['options']>; usefulWidth: number; unit: string; unitPrice: number; meters: number; area: number; total: number; fulfillment: string }> = [];
-  for (const { item, series, record, existingVariant, options, usefulWidth, unit, unitPrice } of prepared) {
+  const calculated: Array<{ item: (typeof input.items)[number]; productId: string; variantId: string; options: NonNullable<(typeof input.items)[number]['options']>; usefulWidth: number; unit: string; unitPrice: number; meters: number; area: number; total: number; fulfillment: string; isRoofArea: boolean }> = [];
+  for (const { item, series, record, existingVariant, options, usefulWidth, unit, unitPrice, category } of prepared) {
     if (!options) return { error: 'Оберіть параметри для кожного товару.' };
     const productId = record?.id ?? (series ? (await prisma.product.upsert({ where: { slug: series.slug }, create: {
       title: series.title, slug: series.slug, description: series.description, category: series.category,
@@ -93,10 +95,11 @@ export async function submitWebsiteOrder(_: CheckoutState, formData: FormData): 
       } });
     }
     if (Number(variant.price) !== unitPrice) await prisma.productVariant.update({ where: { id: variant.id }, data: { price: unitPrice } });
-    const meters = item.quantity * item.length;
-    const area = meters * usefulWidth;
+    const isRoofArea = category === 'Металочерепиця';
+    const meters = isRoofArea ? item.quantity / usefulWidth : item.quantity * item.length;
+    const area = isRoofArea ? item.quantity : meters * usefulWidth;
     const billableQuantity = /м²|м2/i.test(unit) ? area : meters;
-    calculated.push({ item, productId, variantId: variant.id, options, usefulWidth, unit, unitPrice, meters, area, total: roundMoney(unitPrice * billableQuantity), fulfillment: series?.slug === 'profnastyl-s10' ? 'MANUFACTURE' : 'PARTNER' });
+    calculated.push({ item, productId, variantId: variant.id, options, usefulWidth, unit, unitPrice, meters, area, total: roundMoney(unitPrice * billableQuantity), fulfillment: series?.slug === 'profnastyl-s10' ? 'MANUFACTURE' : 'PARTNER', isRoofArea });
   }
   const totalAmount = roundMoney(calculated.reduce((sum, item) => sum + item.total, 0));
   const note = [`Доставка: Нова Пошта, ${input.city}, ${input.deliveryBranch}`, input.note].filter(Boolean).join('\n');
@@ -107,10 +110,10 @@ export async function submitWebsiteOrder(_: CheckoutState, formData: FormData): 
     return tx.order.create({
       data: {
         number: `WEB-${randomUUID().slice(0, 8).toUpperCase()}`, customerId, status: 'NEW', totalAmount, note,
-        items: { create: calculated.map(({ item, productId, variantId, options, usefulWidth, unit, unitPrice, meters, area, total, fulfillment }) => ({
-          productId, variantId, quantity: item.quantity, length: item.length,
+        items: { create: calculated.map(({ item, productId, variantId, options, usefulWidth, unit, unitPrice, meters, area, total, fulfillment, isRoofArea }) => ({
+          productId, variantId, quantity: item.quantity, length: isRoofArea ? 1 : item.length,
           width: usefulWidth, price: unitPrice, total,
-          parameters: { source: 'website', fulfillment, sheets: item.quantity, totalMeters: meters, area, unit, options },
+          parameters: { source: 'website', fulfillment, calculation: isRoofArea ? 'roof-area' : 'sheets', sheets: isRoofArea ? 0 : item.quantity, totalMeters: meters, area, unit, options },
         })) },
       }, select: { number: true },
     });
