@@ -8,6 +8,7 @@ from '../../store/cart-store';
 
 import styles
 from './CartDrawer.module.css';
+import { formatMoney, roundMoney } from '@/lib/money';
 
 export const CartDrawer = () => {
 
@@ -22,13 +23,13 @@ export const CartDrawer = () => {
 
   if (!isOpen) return null;
 
-  const totalPrice =
+  const totalPrice = roundMoney(
     items.reduce(
       (acc, item) =>
         acc +
         item.total,
       0
-    );
+    ));
 
   return (
     <>
@@ -136,14 +137,14 @@ export const CartDrawer = () => {
                 <p className={styles.itemPrice}>
                   {item.quantity}
                     {' × '}
-                    {(item.total / item.quantity).toLocaleString('uk-UA')}
+                    {formatMoney(item.total / item.quantity)}
                     {' грн'}
                 </p>
 
                 <p className={styles.subtotal}>
                   Разом:
                   {' '}
-                  {item.total.toLocaleString('uk-UA', { maximumFractionDigits: 2 })}
+                  {formatMoney(item.total)}
                   {' '}
                   грн
                 </p>
@@ -181,7 +182,7 @@ export const CartDrawer = () => {
             <div className={styles.total}>
               Разом:
               {' '}
-              {totalPrice.toFixed(0)}
+              {formatMoney(totalPrice)}
               {' '}
               грн
             </div>

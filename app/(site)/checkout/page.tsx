@@ -8,6 +8,7 @@ from '@/store/cart-store';
 import styles
 from './CheckoutPage.module.css';
 import { submitWebsiteOrder, type CheckoutState } from './actions';
+import { formatMoney, roundMoney } from '@/lib/money';
 
 const initialState: CheckoutState = {};
 
@@ -24,11 +25,11 @@ useEffect(() => {
   }
 }, [state.orderNumber, clearCart]);
 
-  const totalPrice =
+  const totalPrice = roundMoney(
     items.reduce(
       (acc, item) => acc + item.total,
       0
-    );
+    ));
 
   if (state.orderNumber) {
     return <main className={styles.page}><div className="container"><h1 className={styles.title}>Дякуємо за замовлення</h1><p>Ваш номер: <strong>{state.orderNumber}</strong>. Менеджер зв’яжеться з вами найближчим часом.</p></div></main>;
@@ -116,7 +117,7 @@ useEffect(() => {
                     {item.title}
                   </p>
 
-                  <p>{item.quantity} × {item.length} м · {item.total.toLocaleString('uk-UA', { maximumFractionDigits: 2 })} грн</p>
+                  <p>{item.quantity} × {item.length} м · {formatMoney(item.total)} грн</p>
 
                 </div>
 
@@ -127,7 +128,7 @@ useEffect(() => {
             <div className={styles.total}>
               Разом:
               {' '}
-              {totalPrice}
+              {formatMoney(totalPrice)}
               {' '}
               грн
             </div>

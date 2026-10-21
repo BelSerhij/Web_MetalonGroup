@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useCartStore } from '@/store/cart-store';
 import { useProductColor } from '@/components/catalog/ProductColorContext';
 import { CATALOG_COLORS, findCatalogColor } from '@/lib/catalog/colors';
+import { formatMoney, roundMoney } from '@/lib/money';
 import styles from './ProductConfigurator.module.css';
 
 type Variant = {
@@ -74,7 +75,7 @@ export function ProductConfigurator({ product, initialSelection }: { product: Pr
   const totalMeters = sheetRows.reduce((sum, row) => sum + row.count * row.length, 0);
   const totalArea = totalMeters * product.usefulWidth;
   const unitPrice = catalogPrice ?? product.manualUnitPrice ?? null;
-  const totalPrice = unitPrice === null ? null : unitPrice * (product.unit === 'м²' ? totalArea : totalMeters);
+  const totalPrice = unitPrice === null ? null : roundMoney(unitPrice * (product.unit === 'м²' ? totalArea : totalMeters));
   const dimensions = sheetRows.map((row) => `${row.count} шт. × ${row.length} м`).join('; ');
   const availableFinishes = product.catalogPrices?.filter((item) => item.metalBrand === selectedMetalBrand && item.thickness === selectedThickness && item.paintingType === paintingType).map((item) => finishKey(item.coating));
   const coatingOptions = availableFinishes?.length
@@ -87,7 +88,7 @@ export function ProductConfigurator({ product, initialSelection }: { product: Pr
     sheetRows.forEach((row) => {
       const meters = row.count * row.length;
       const area = meters * product.usefulWidth;
-      const total = unitPrice! * (product.unit === 'м²' ? area : meters);
+      const total = roundMoney(unitPrice! * (product.unit === 'м²' ? area : meters));
       const options = { color: selectedColor, thickness: selectedThickness, metalBrand: selectedMetalBrand, coating, paintingType };
       const variantId = selectedVariant?.id;
       addToCart({
@@ -142,7 +143,7 @@ export function ProductConfigurator({ product, initialSelection }: { product: Pr
         <span className={styles.calculation}>Разом: {totalMeters.toFixed(2)} м.п. · {totalArea.toFixed(2)} м²</span>
       </div>
 
-      {totalPrice !== null ? <div className={styles.total}><span className={styles.totalLabel}>Разом:</span><span className={styles.totalPrice}>{totalPrice.toLocaleString('uk-UA')} грн</span></div> : <p className={styles.quoteNote}>Ціну для цієї комбінації уточнюйте телефоном.</p>}
+      {totalPrice !== null ? <div className={styles.total}><span className={styles.totalLabel}>Разом:</span><span className={styles.totalPrice}>{formatMoney(totalPrice)} грн</span></div> : <p className={styles.quoteNote}>Ціну для цієї комбінації уточнюйте телефоном.</p>}
       {totalPrice !== null && <button type="button" onClick={handleAddToCart} className={styles.addButton}>Додати в кошик</button>}
       <a href={quoteHref} className={`${styles.addButton} ${styles.quoteButton}`}>Уточнити вартість</a>
     </div>

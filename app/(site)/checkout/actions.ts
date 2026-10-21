@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { productSeries } from '@/lib/catalog/series';
 import { canonicalFinish, canonicalManufacturer, canonicalizeMaterialRates } from '@/lib/catalog/manufacturers';
+import { roundMoney } from '@/lib/money';
 
 const checkoutSchema = z.object({
   name: z.string().trim().min(2, 'Вкажіть ім’я').max(120),
@@ -95,9 +96,9 @@ export async function submitWebsiteOrder(_: CheckoutState, formData: FormData): 
     const meters = item.quantity * item.length;
     const area = meters * usefulWidth;
     const billableQuantity = /м²|м2/i.test(unit) ? area : meters;
-    calculated.push({ item, productId, variantId: variant.id, options, usefulWidth, unit, unitPrice, meters, area, total: unitPrice * billableQuantity, fulfillment: series?.slug === 'profnastyl-s10' ? 'MANUFACTURE' : 'PARTNER' });
+    calculated.push({ item, productId, variantId: variant.id, options, usefulWidth, unit, unitPrice, meters, area, total: roundMoney(unitPrice * billableQuantity), fulfillment: series?.slug === 'profnastyl-s10' ? 'MANUFACTURE' : 'PARTNER' });
   }
-  const totalAmount = calculated.reduce((sum, item) => sum + item.total, 0);
+  const totalAmount = roundMoney(calculated.reduce((sum, item) => sum + item.total, 0));
   const note = [`Доставка: Нова Пошта, ${input.city}, ${input.deliveryBranch}`, input.note].filter(Boolean).join('\n');
 
   const order = await prisma.$transaction(async (tx) => {

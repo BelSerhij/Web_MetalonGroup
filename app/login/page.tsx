@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useActionState } from 'react';
 import { ArrowRight, LockKeyhole } from 'lucide-react';
 import { login, type LoginState } from './actions';
@@ -32,5 +33,5 @@ export default function LoginPage() {
 }
 
 function LinkBack() {
-  return <a href="/" className={styles.back}>← Повернутись на сайт</a>;
+  return <Link href="/" className={styles.back}>← Повернутись на сайт</Link>;
 }
